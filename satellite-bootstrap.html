@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>G.R.O.W From Above</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .highlight {
+      color: #8bb439 !important;
+    }
+    .bg-highlight {
+      background-color: #8bb439 !important;
+      color: #fff !important;
+    }
+    .card-title {
+      font-size: 1rem;
+      font-weight: 500;
+    }
+    .card-value {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #222;
+    }
+    .badge-info {
+      background: #e6f4d7;
+      color: #8bb439;
+      font-size: 0.8em;
+    }
+    .info-icon {
+      font-size: 1.1em;
+      color: #8bb439;
+      cursor: pointer;
+      vertical-align: middle;
+    }
+  </style>
+</head>
+<body class="bg-light">
+  <div class="container py-4">
+    <!-- Header -->
+    <div class="mb-3 p-4 bg-white rounded-4 shadow-sm">
+      <h2 class="mb-1 fw-bold">G.R.O.W From Above</h2>
+      <p class="text-muted mb-0">See the bigger picture — monitor crop health and field dynamics through aerial insights.</p>
+    </div>
+
+    <!-- Section Toggle -->
+    <div class="mb-3">
+      <button class="btn bg-highlight me-2" disabled>Satellite</button>
+      <a href="weather-bootstrap.html" class="btn btn-outline-secondary">Weather</a>
+    </div>
+
+    <!-- Filters (Farm/Paddock) -->
+    <div class="mb-4 bg-white p-3 rounded-4 shadow-sm d-flex flex-wrap gap-2 align-items-center">
+      <label for="farmSelect" class="form-label mb-0 me-2">Farm:</label>
+      <select id="farmSelect" class="form-select w-auto me-3">
+        <option value="1">North Farm</option>
+        <option value="2">South Farm</option>
+      </select>
+      <label for="paddockSelect" class="form-label mb-0 me-2">Paddock:</label>
+      <select id="paddockSelect" class="form-select w-auto">
+        <option value="1">Iowa Demo Field</option>
+      </select>
+    </div>
+
+    <!-- Cards Row -->
+    <div class="mb-4 bg-white p-3 rounded-4 shadow-sm">
+      <div class="row g-3">
+        <div class="col-12 col-md-6 col-lg-3">
+          <div class="card h-100 border-0 shadow-sm rounded-4">
+            <div class="card-body">
+              <div class="d-flex align-items-center mb-2">
+                <span class="material-icons highlight me-2">trending_up</span>
+                <span class="card-title">NDVI
+                  <span class="material-icons info-icon ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Normalized Difference Vegetation Index (NDVI) is a widely used remote sensing index that measures the density and health of vegetation by comparing the difference between near-infrared (which vegetation strongly reflects) and red light (which vegetation absorbs). NDVI values range from -1 to 1, where higher values indicate healthier and denser green vegetation, while lower values indicate sparse or stressed vegetation, bare soil, or non-vegetated surfaces.">info</span>
+                </span>
+                <span class="badge badge-info ms-2">Current</span>
+              </div>
+              <div class="card-value" id="ndviValue">0.723</div>
+              <div class="text-muted small">Vegetation Health</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-md-6 col-lg-3">
+          <div class="card h-100 border-0 shadow-sm rounded-4">
+            <div class="card-body">
+              <div class="d-flex align-items-center mb-2">
+                <span class="material-icons highlight me-2">bar_chart</span>
+                <span class="card-title">EVI
+                  <span class="material-icons info-icon ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Enhanced Vegetation Index (EVI) is an optimized vegetation index designed to enhance the vegetation signal with improved sensitivity in high biomass regions and improved vegetation monitoring through a de-coupling of the canopy background signal and a reduction in atmospheric influences. EVI is particularly useful in areas with dense canopy and is calculated using blue, red, and near-infrared bands.">info</span>
+                </span>
+                <span class="badge badge-info ms-2">Current</span>
+              </div>
+              <div class="card-value" id="eviValue">0.512</div>
+              <div class="text-muted small">Enhanced Vegetation</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-md-6 col-lg-3">
+          <div class="card h-100 border-0 shadow-sm rounded-4">
+            <div class="card-body">
+              <div class="d-flex align-items-center mb-2">
+                <span class="material-icons highlight me-2">show_chart</span>
+                <span class="card-title">SAVI
+                  <span class="material-icons info-icon ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Soil Adjusted Vegetation Index (SAVI) is a vegetation index that corrects for the influence of soil brightness in areas where vegetative cover is low. It introduces a soil brightness correction factor (L) to the NDVI formula, making it more reliable for arid and semi-arid regions. SAVI values also range from -1 to 1.">info</span>
+                </span>
+                <span class="badge badge-info ms-2">Current</span>
+              </div>
+              <div class="card-value" id="saviValue">0.634</div>
+              <div class="text-muted small">Soil Adjusted</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-md-6 col-lg-3">
+          <div class="card h-100 border-0 shadow-sm rounded-4">
+            <div class="card-body">
+              <div class="d-flex align-items-center mb-2">
+                <span class="material-icons highlight me-2">opacity</span>
+                <span class="card-title">Moisture
+                  <span class="material-icons info-icon ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Soil Moisture Index (or similar proxy) estimates the amount of water present in the soil, which is crucial for plant growth and health. It can be derived from remote sensing data using various spectral bands sensitive to water content. Higher values indicate wetter soil, while lower values indicate drier conditions.">info</span>
+                </span>
+                <span class="badge badge-info ms-2">Current</span>
+              </div>
+              <div class="card-value" id="moistureValue">0.489</div>
+              <div class="text-muted small">Soil Moisture</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Map Controls (Variable/Date) -->
+    <div class="mb-2 d-flex flex-wrap gap-2 align-items-center">
+      <label for="mapVariableSelect" class="form-label mb-0 me-2">Variable:</label>
+      <select id="mapVariableSelect" class="form-select w-auto me-3">
+        <option value="ndvi">NDVI</option>
+        <option value="evi">EVI</option>
+        <option value="savi">SAVI</option>
+        <option value="moisture">Moisture</option>
+      </select>
+      <label for="mapDateSelect" class="form-label mb-0 me-2">Day:</label>
+      <select id="mapDateSelect" class="form-select w-auto"></select>
+    </div>
+
+    <!-- Map Placeholder -->
+    <div class="bg-white p-4 rounded-4 shadow-sm mb-4">
+      <h5 class="mb-3">Map View <span id="mapLegend" class="badge bg-highlight ms-2">NDVI</span> <span id="mapDateLabel" class="badge bg-secondary ms-2"></span></h5>
+      <div id="map" style="height: 300px; width: 100%;"></div>
+    </div>
+
+    <!-- Chart Controls (below map) -->
+    <div class="mb-2 d-flex flex-wrap gap-2 align-items-center">
+      <label for="chartFromDate" class="form-label mb-0 me-2">Date Range:</label>
+      <input type="date" id="chartFromDate" class="form-control w-auto">
+      <input type="date" id="chartToDate" class="form-control w-auto ms-2">
+      <button id="applyDateRange" class="btn btn-sm btn-outline-primary ms-2">Apply</button>
+    </div>
+
+    <!-- Charts stacked vertically -->
+    <div class="mb-4">
+      <div class="bg-white p-3 rounded-4 shadow-sm mb-4">
+        <h6 class="mb-2">NDVI Time Series
+          <span class="material-icons info-icon ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Normalized Difference Vegetation Index (NDVI) is a widely used remote sensing index that measures the density and health of vegetation by comparing the difference between near-infrared (which vegetation strongly reflects) and red light (which vegetation absorbs). NDVI values range from -1 to 1, where higher values indicate healthier and denser green vegetation, while lower values indicate sparse or stressed vegetation, bare soil, or non-vegetated surfaces.">info</span>
+        </h6>
+        <canvas id="ndviChart" height="120"></canvas>
+      </div>
+      <div class="bg-white p-3 rounded-4 shadow-sm mb-4">
+        <h6 class="mb-2">EVI Time Series
+          <span class="material-icons info-icon ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Enhanced Vegetation Index (EVI) is an optimized vegetation index designed to enhance the vegetation signal with improved sensitivity in high biomass regions and improved vegetation monitoring through a de-coupling of the canopy background signal and a reduction in atmospheric influences. EVI is particularly useful in areas with dense canopy and is calculated using blue, red, and near-infrared bands.">info</span>
+        </h6>
+        <canvas id="eviChart" height="120"></canvas>
+      </div>
+      <div class="bg-white p-3 rounded-4 shadow-sm mb-4">
+        <h6 class="mb-2">SAVI Time Series
+          <span class="material-icons info-icon ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Soil Adjusted Vegetation Index (SAVI) is a vegetation index that corrects for the influence of soil brightness in areas where vegetative cover is low. It introduces a soil brightness correction factor (L) to the NDVI formula, making it more reliable for arid and semi-arid regions. SAVI values also range from -1 to 1.">info</span>
+        </h6>
+        <canvas id="saviChart" height="120"></canvas>
+      </div>
+      <div class="bg-white p-3 rounded-4 shadow-sm mb-4">
+        <h6 class="mb-2">Moisture Time Series
+          <span class="material-icons info-icon ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Soil Moisture Index (or similar proxy) estimates the amount of water present in the soil, which is crucial for plant growth and health. It can be derived from remote sensing data using various spectral bands sensitive to water content. Higher values indicate wetter soil, while lower values indicate drier conditions.">info</span>
+        </h6>
+        <canvas id="moistureChart" height="120"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap, jQuery, Chart.js, Material Icons, and Leaflet -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    // --- EOSDA indices for all variables ---
+    const indices = [
+      { key: 'ndvi', label: 'NDVI', color: '#8bb439' },
+      { key: 'evi', label: 'EVI', color: '#3b82f6' },
+      { key: 'savi', label: 'SAVI', color: '#f59e42' },
+      { key: 'moisture', label: 'Moisture', color: '#06b6d4' }
+    ];
+    const lat = 41.875;
+    const lon = -93.095;
+    const polygon = {
+      type: 'Polygon',
+      coordinates: [[
+        [-93.10, 41.88],
+        [-93.09, 41.88],
+        [-93.09, 41.87],
+        [-93.10, 41.87],
+        [-93.10, 41.88]
+      ]]
+    };
+
+    // --- MOCK DATA GENERATION ---
+    function generateMockTimeSeries(index, fromDate, toDate) {
+      const dates = [];
+      let d = new Date(fromDate);
+      const end = new Date(toDate);
+      while (d <= end) {
+        dates.push(new Date(d));
+        d.setDate(d.getDate() + 3); // every 3 days
+      }
+      return dates.map(date => ({
+        date: date.toISOString().split('T')[0],
+        value: (Math.random() * 0.5 + 0.3).toFixed(3)
+      }));
+    }
+    function getMockLatest(index) {
+      return (Math.random() * 0.5 + 0.3).toFixed(3);
+    }
+
+    // --- Map overlay logic (mock) ---
+    function updateMapOverlay(index, date) {
+      if (window.ndviOverlay) { window.map.removeLayer(window.ndviOverlay); }
+      // Just add a semi-transparent colored rectangle for demo
+      window.ndviOverlay = L.rectangle([[41.87, -93.10], [41.88, -93.09]], {
+        color: indices.find(i => i.key === index).color,
+        weight: 1,
+        fillOpacity: 0.3
+      }).addTo(window.map);
+    }
+
+    // --- UI logic ---
+    $(function() {
+      // Leaflet Map
+      window.map = L.map('map').setView([41.8781, -93.0977], 15); // Centered on Iowa
+      L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+        maxZoom: 19,
+        attribution: 'Tiles © Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+      }).addTo(window.map);
+      // Example polygon (Iowa Demo Field boundary)
+      const iowaFieldCoords = [
+        [41.88, -93.10],
+        [41.88, -93.09],
+        [41.87, -93.09],
+        [41.87, -93.10]
+      ];
+      L.polygon(iowaFieldCoords, {color: '#8bb439', fillOpacity: 0.3})
+        .addTo(window.map)
+        .bindPopup('Iowa Demo Field')
+        .openPopup();
+      window.map.fitBounds(iowaFieldCoords);
+
+      // Set up cards and charts for all indices
+      for (const idx of indices) {
+        // Update card value
+        $(`#${idx.key}Value`).text(getMockLatest(idx.key));
+        // Fetch and render time series
+        const from = new Date();
+        from.setDate(from.getDate() - 30);
+        const to = new Date();
+        const series = generateMockTimeSeries(idx.key, from.toISOString().split('T')[0], to.toISOString().split('T')[0]);
+        const ctx = document.getElementById(`${idx.key}Chart`).getContext('2d');
+        new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: series.map(d => d.date),
+            datasets: [{
+              label: idx.label,
+              data: series.map(d => d.value),
+              borderColor: idx.color,
+              backgroundColor: idx.color + '22',
+              tension: 0.3,
+              fill: true
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: {
+              x: { display: true, title: { display: true, text: 'Date' } },
+              y: { display: true, title: { display: true, text: idx.label } }
+            }
+          }
+        });
+      }
+
+      // Map variable/date selector logic
+      $('#mapVariableSelect').on('change', function() {
+        const variable = $(this).val();
+        const date = $('#mapDateSelect').val();
+        $('#mapLegend').text(variable.toUpperCase());
+        updateMapOverlay(variable, date);
+      });
+      $('#mapDateSelect').on('change', function() {
+        const variable = $('#mapVariableSelect').val();
+        const date = $(this).val();
+        $('#mapDateLabel').text(date);
+        updateMapOverlay(variable, date);
+      });
+
+      // Set up date selector with mock dates
+      const from = new Date();
+      from.setDate(from.getDate() - 30);
+      const to = new Date();
+      const mockDates = generateMockTimeSeries('ndvi', from.toISOString().split('T')[0], to.toISOString().split('T')[0]).map(d => d.date);
+      $('#mapDateSelect').empty();
+      mockDates.forEach(date => {
+        $('#mapDateSelect').append(`<option value="${date}">${date}</option>`);
+      });
+      $('#mapDateSelect').val(mockDates[mockDates.length-1]);
+
+      // Set initial map overlay
+      const initialVar = $('#mapVariableSelect').val();
+      const initialDate = $('#mapDateSelect').val();
+      updateMapOverlay(initialVar, initialDate);
+
+      // Set initial map legend and date
+      $('#mapLegend').text($('#mapVariableSelect').val().toUpperCase());
+      $('#mapDateLabel').text($('#mapDateSelect').val());
+
+      // Enable Bootstrap tooltips
+      var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+      tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+      });
+    });
+  </script>
+</body>
+</html> 

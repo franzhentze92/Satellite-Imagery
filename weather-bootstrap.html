@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>G.R.O.W Weather Watch</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .highlight {
+      color: #8bb439 !important;
+    }
+    .bg-highlight {
+      background-color: #8bb439 !important;
+      color: #fff !important;
+    }
+    .card-title {
+      font-size: 1rem;
+      font-weight: 500;
+    }
+    .card-value {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #222;
+    }
+    .badge-info {
+      background: #e6f4d7;
+      color: #8bb439;
+      font-size: 0.8em;
+    }
+    .info-icon {
+      font-size: 1.1em;
+      color: #8bb439;
+      cursor: pointer;
+      vertical-align: middle;
+    }
+  </style>
+</head>
+<body class="bg-light">
+  <div class="container py-4">
+    <!-- Header -->
+    <div class="mb-3 p-4 bg-white rounded-4 shadow-sm">
+      <h2 class="mb-1 fw-bold">G.R.O.W Weather Watch</h2>
+      <p class="text-muted mb-0">Stay ahead of the season — access localized forecasts to plan with precision and protect yield.</p>
+    </div>
+
+    <!-- Section Toggle -->
+    <div class="mb-3">
+      <a href="satellite-bootstrap.html" class="btn btn-outline-secondary me-2">Satellite</a>
+      <button class="btn bg-highlight" disabled>Weather</button>
+    </div>
+
+    <!-- Filters (Farm/Paddock) -->
+    <div class="mb-4 bg-white p-3 rounded-4 shadow-sm d-flex flex-wrap gap-2 align-items-center">
+      <label for="farmSelect" class="form-label mb-0 me-2">Farm:</label>
+      <select id="farmSelect" class="form-select w-auto me-3">
+        <option value="1">North Farm</option>
+        <option value="2">South Farm</option>
+      </select>
+      <label for="paddockSelect" class="form-label mb-0 me-2">Paddock:</label>
+      <select id="paddockSelect" class="form-select w-auto">
+        <option value="1">Iowa Demo Field</option>
+      </select>
+    </div>
+
+    <!-- Cards Row -->
+    <div class="mb-4 bg-white p-3 rounded-4 shadow-sm">
+      <div class="row g-3">
+        <div class="col-12 col-md-6 col-lg-3">
+          <div class="card h-100 border-0 shadow-sm rounded-4">
+            <div class="card-body">
+              <div class="d-flex align-items-center mb-2">
+                <span class="material-icons highlight me-2">thermostat</span>
+                <span class="card-title">Temperature
+                  <span class="material-icons info-icon ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Temperature is a measure of the warmth or coldness of the atmosphere as determined by a thermometer. It is a fundamental parameter in weather and climate studies, typically measured in degrees Celsius (°C) or Fahrenheit (°F). Temperature affects plant growth, development, and physiological processes.">info</span>
+                </span>
+                <span class="badge badge-info ms-2">Current</span>
+              </div>
+              <div class="card-value" id="tempValue">22.5°C</div>
+              <div class="text-muted small">Air Temperature</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-md-6 col-lg-3">
+          <div class="card h-100 border-0 shadow-sm rounded-4">
+            <div class="card-body">
+              <div class="d-flex align-items-center mb-2">
+                <span class="material-icons highlight me-2">water_drop</span>
+                <span class="card-title">Humidity
+                  <span class="material-icons info-icon ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Humidity is the concentration of water vapor present in the air. It is usually expressed as a percentage (relative humidity) and is a key factor in weather, plant transpiration, and disease development. High humidity can reduce evaporation and increase the risk of plant diseases.">info</span>
+                </span>
+                <span class="badge badge-info ms-2">Current</span>
+              </div>
+              <div class="card-value" id="humidityValue">65%</div>
+              <div class="text-muted small">Relative Humidity</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-md-6 col-lg-3">
+          <div class="card h-100 border-0 shadow-sm rounded-4">
+            <div class="card-body">
+              <div class="d-flex align-items-center mb-2">
+                <span class="material-icons highlight me-2">air</span>
+                <span class="card-title">Wind Speed
+                  <span class="material-icons info-icon ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Wind speed is the rate at which air is moving horizontally past a given point. It is typically measured in meters per second (m/s) or kilometers per hour (km/h). Wind affects evapotranspiration, pollination, and can cause physical damage to crops.">info</span>
+                </span>
+                <span class="badge badge-info ms-2">Current</span>
+              </div>
+              <div class="card-value" id="windValue">5.2 m/s</div>
+              <div class="text-muted small">Wind Speed</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-md-6 col-lg-3">
+          <div class="card h-100 border-0 shadow-sm rounded-4">
+            <div class="card-body">
+              <div class="d-flex align-items-center mb-2">
+                <span class="material-icons highlight me-2">visibility</span>
+                <span class="card-title">Visibility
+                  <span class="material-icons info-icon ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Visibility is the distance at which an object or light can be clearly discerned. It is an important parameter for agricultural operations and is affected by fog, rain, dust, and other atmospheric conditions. Visibility is typically measured in kilometers (km) or miles (mi)."></span>
+                </span>
+                <span class="badge badge-info ms-2">Current</span>
+              </div>
+              <div class="card-value" id="visValue">10 km</div>
+              <div class="text-muted small">Visibility</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Map Placeholder -->
+    <div class="bg-white p-4 rounded-4 shadow-sm mb-4">
+      <h5 class="mb-3">Map View</h5>
+      <div id="map" style="height: 300px; width: 100%;"></div>
+    </div>
+
+    <!-- Chart Controls (below map) -->
+    <div class="mb-2 d-flex flex-wrap gap-2 align-items-center">
+      <label for="chartFromDate" class="form-label mb-0 me-2">Date Range:</label>
+      <input type="date" id="chartFromDate" class="form-control w-auto">
+      <input type="date" id="chartToDate" class="form-control w-auto ms-2">
+      <button id="applyDateRange" class="btn btn-sm btn-outline-primary ms-2">Apply</button>
+    </div>
+
+    <!-- Charts stacked vertically -->
+    <div class="mb-4">
+      <div class="bg-white p-3 rounded-4 shadow-sm mb-4">
+        <h6 class="mb-2">Temperature Time Series
+          <span class="material-icons info-icon ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Temperature is a measure of the warmth or coldness of the atmosphere as determined by a thermometer. It is a fundamental parameter in weather and climate studies, typically measured in degrees Celsius (°C) or Fahrenheit (°F). Temperature affects plant growth, development, and physiological processes.">info</span>
+        </h6>
+        <canvas id="tempChart" height="120"></canvas>
+      </div>
+      <div class="bg-white p-3 rounded-4 shadow-sm mb-4">
+        <h6 class="mb-2">Humidity Time Series
+          <span class="material-icons info-icon ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Humidity is the concentration of water vapor present in the air. It is usually expressed as a percentage (relative humidity) and is a key factor in weather, plant transpiration, and disease development. High humidity can reduce evaporation and increase the risk of plant diseases.">info</span>
+        </h6>
+        <canvas id="humidityChart" height="120"></canvas>
+      </div>
+      <div class="bg-white p-3 rounded-4 shadow-sm mb-4">
+        <h6 class="mb-2">Wind Speed Time Series
+          <span class="material-icons info-icon ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Wind speed is the rate at which air is moving horizontally past a given point. It is typically measured in meters per second (m/s) or kilometers per hour (km/h). Wind affects evapotranspiration, pollination, and can cause physical damage to crops.">info</span>
+        </h6>
+        <canvas id="windChart" height="120"></canvas>
+      </div>
+      <div class="bg-white p-3 rounded-4 shadow-sm mb-4">
+        <h6 class="mb-2">Visibility Time Series
+          <span class="material-icons info-icon ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Visibility is the distance at which an object or light can be clearly discerned. It is an important parameter for agricultural operations and is affected by fog, rain, dust, and other atmospheric conditions. Visibility is typically measured in kilometers (km) or miles (mi).">info</span>
+        </h6>
+        <canvas id="visChart" height="120"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap, jQuery, Chart.js, Material Icons, and Leaflet -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    // --- MOCK DATA GENERATION ---
+    function generateMockWeatherSeries(fromDate, toDate) {
+      const dates = [];
+      let d = new Date(fromDate);
+      const end = new Date(toDate);
+      while (d <= end) {
+        dates.push(new Date(d));
+        d.setDate(d.getDate() + 1); // daily
+      }
+      return dates.map(date => ({
+        date: date.toISOString().split('T')[0],
+        temperature: (Math.random() * 15 + 10).toFixed(1),
+        humidity: (Math.random() * 40 + 40).toFixed(0),
+        wind: (Math.random() * 5 + 2).toFixed(1),
+        visibility: (Math.random() * 5 + 5).toFixed(1)
+      }));
+    }
+    function getMockCurrentWeather() {
+      return {
+        temperature: (Math.random() * 15 + 10).toFixed(1),
+        humidity: (Math.random() * 40 + 40).toFixed(0),
+        wind: (Math.random() * 5 + 2).toFixed(1),
+        visibility: (Math.random() * 5 + 5).toFixed(1)
+      };
+    }
+
+    let allData = [];
+    let tempChart, humidityChart, windChart, visChart;
+
+    function updateCharts(filteredData) {
+      tempChart.data.labels = filteredData.map(d => d.date);
+      tempChart.data.datasets[0].data = filteredData.map(d => d.temperature);
+      tempChart.update();
+      humidityChart.data.labels = filteredData.map(d => d.date);
+      humidityChart.data.datasets[0].data = filteredData.map(d => d.humidity);
+      humidityChart.update();
+      windChart.data.labels = filteredData.map(d => d.date);
+      windChart.data.datasets[0].data = filteredData.map(d => d.wind);
+      windChart.update();
+      visChart.data.labels = filteredData.map(d => d.date);
+      visChart.data.datasets[0].data = filteredData.map(d => d.visibility);
+      visChart.update();
+    }
+
+    $(function() {
+      // Set up chart date range selectors (default: last 30 days)
+      const today = new Date();
+      const prior = new Date();
+      prior.setDate(today.getDate() - 29);
+      const startDate = prior.toISOString().split('T')[0];
+      const endDate = today.toISOString().split('T')[0];
+      $('#chartFromDate').val(startDate);
+      $('#chartToDate').val(endDate);
+
+      // Initialize empty charts
+      tempChart = new Chart(document.getElementById('tempChart').getContext('2d'), {
+        type: 'line',
+        data: { labels: [], datasets: [{ label: 'Temperature', data: [], borderColor: '#f87171', backgroundColor: 'rgba(248,113,113,0.1)', tension: 0.3, fill: true }] },
+        options: { responsive: true, plugins: { legend: { display: false } }, scales: { x: { display: true, title: { display: true, text: 'Date' } }, y: { display: true, title: { display: true, text: 'Temperature (°C)' } } } }
+      });
+      humidityChart = new Chart(document.getElementById('humidityChart').getContext('2d'), {
+        type: 'line',
+        data: { labels: [], datasets: [{ label: 'Humidity', data: [], borderColor: '#60a5fa', backgroundColor: 'rgba(96,165,250,0.1)', tension: 0.3, fill: true }] },
+        options: { responsive: true, plugins: { legend: { display: false } }, scales: { x: { display: true, title: { display: true, text: 'Date' } }, y: { display: true, title: { display: true, text: 'Humidity (%)' } } } }
+      });
+      windChart = new Chart(document.getElementById('windChart').getContext('2d'), {
+        type: 'line',
+        data: { labels: [], datasets: [{ label: 'Wind Speed', data: [], borderColor: '#34d399', backgroundColor: 'rgba(52,211,153,0.1)', tension: 0.3, fill: true }] },
+        options: { responsive: true, plugins: { legend: { display: false } }, scales: { x: { display: true, title: { display: true, text: 'Date' } }, y: { display: true, title: { display: true, text: 'Wind Speed (m/s)' } } } }
+      });
+      visChart = new Chart(document.getElementById('visChart').getContext('2d'), {
+        type: 'line',
+        data: { labels: [], datasets: [{ label: 'Visibility', data: [], borderColor: '#fbbf24', backgroundColor: 'rgba(251,191,36,0.1)', tension: 0.3, fill: true }] },
+        options: { responsive: true, plugins: { legend: { display: false } }, scales: { x: { display: true, title: { display: true, text: 'Date' } }, y: { display: true, title: { display: true, text: 'Visibility (km)' } } } }
+      });
+
+      // Set mock current weather
+      const current = getMockCurrentWeather();
+      $('#tempValue').text(current.temperature + '°C');
+      $('#humidityValue').text(current.humidity + '%');
+      $('#windValue').text(current.wind + ' m/s');
+      $('#visValue').text(current.visibility + ' km');
+
+      // Generate and display mock historical weather for charts
+      allData = generateMockWeatherSeries(startDate, endDate);
+      // Populate map date selector
+      $('#mapDateSelect').empty();
+      allData.forEach(d => {
+        $('#mapDateSelect').append(`<option value="${d.date}">${d.date}</option>`);
+      });
+      $('#mapDateSelect').val(allData[allData.length - 1].date);
+      $('#mapDateLabel').text(allData[allData.length - 1].date);
+      updateCharts(allData);
+
+      // Date range filter for charts
+      $('#applyDateRange').on('click', function() {
+        const from = $('#chartFromDate').val();
+        const to = $('#chartToDate').val();
+        allData = generateMockWeatherSeries(from, to);
+        updateCharts(allData);
+      });
+
+      // Leaflet Map
+      var map = L.map('map').setView([41.8781, -93.0977], 6); // Centered on Iowa
+      L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+        maxZoom: 19,
+        attribution: 'Tiles © Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+      }).addTo(map);
+      // Example polygon (Iowa Demo Field boundary)
+      const iowaFieldCoords = [
+        [41.88, -93.10],
+        [41.88, -93.09],
+        [41.87, -93.09],
+        [41.87, -93.10]
+      ];
+      L.polygon(iowaFieldCoords, {color: '#8bb439', fillOpacity: 0.3})
+        .addTo(map)
+        .bindPopup('Iowa Demo Field')
+        .openPopup();
+      map.fitBounds(iowaFieldCoords);
+
+      // Enable Bootstrap tooltips
+      var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+      tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+      });
+    });
+  </script>
+</body>
+</html> 
