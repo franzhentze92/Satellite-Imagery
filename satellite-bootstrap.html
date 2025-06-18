@@ -193,149 +193,127 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script>
-    // --- EOSDA indices for all variables ---
-    const indices = [
-      { key: 'ndvi', label: 'NDVI', color: '#8bb439' },
-      { key: 'evi', label: 'EVI', color: '#3b82f6' },
-      { key: 'savi', label: 'SAVI', color: '#f59e42' },
-      { key: 'moisture', label: 'Moisture', color: '#06b6d4' }
+    // Yandina Farm polygon (longitude, latitude)
+    const yandinaPolygon = [
+      [152.9148355104133, -26.49630785386763],
+      [152.9149951437186, -26.49644491790693],
+      [152.9150826047683, -26.49643498282219],
+      [152.915136003929, -26.49647654096426],
+      [152.9151679717066, -26.49641027369633],
+      [152.9151522879532, -26.4963066956674],
+      [152.9151405649811, -26.49617943071427],
+      [152.9151330645278, -26.49603918146022],
+      [152.9150405267262, -26.49598117140157],
+      [152.9149028386955, -26.49619458038391],
+      [152.9148355104133, -26.49630785386763]
     ];
-    const lat = 41.875;
-    const lon = -93.095;
-    const polygon = {
+    const yandinaPolygonGeoJSON = {
       type: 'Polygon',
-      coordinates: [[
-        [-93.10, 41.88],
-        [-93.09, 41.88],
-        [-93.09, 41.87],
-        [-93.10, 41.87],
-        [-93.10, 41.88]
-      ]]
+      coordinates: [yandinaPolygon]
     };
 
-    // --- MOCK DATA GENERATION ---
-    function generateMockTimeSeries(index, fromDate, toDate) {
-      const dates = [];
-      let d = new Date(fromDate);
-      const end = new Date(toDate);
-      while (d <= end) {
-        dates.push(new Date(d));
-        d.setDate(d.getDate() + 3); // every 3 days
-      }
-      return dates.map(date => ({
-        date: date.toISOString().split('T')[0],
-        value: (Math.random() * 0.5 + 0.3).toFixed(3)
+    // Helper: get date string in YYYY-MM-DD
+    function formatDate(date) {
+      return date.toISOString().slice(0, 10);
+    }
+
+    // Fetch vegetation indices from proxy
+    async function fetchVegetationIndices(from, to) {
+      const res = await fetch('http://localhost:3001/fetch-vegetation-indices', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          date_start: from + 'T00:00',
+          date_end: to + 'T00:00',
+          geometry: yandinaPolygonGeoJSON,
+          bm_type: ["NDVI", "EVI", "SAVI", "MSI"],
+          sensors: ["sentinel2"]
+        })
+      });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.error || 'Failed to fetch EOSDA vegetation indices');
+      return data.data;
+    }
+
+    // Parse EOSDA vegetation indices data for charts/cards
+    function parseIndicesData(data) {
+      return data.map(d => ({
+        date: d.date,
+        ndvi: d.ndvi != null ? +d.ndvi : null,
+        evi: d.evi != null ? +d.evi : null,
+        savi: d.savi != null ? +d.savi : null,
+        msi: d.msi != null ? +d.msi : null
       }));
     }
-    function getMockLatest(index) {
-      return (Math.random() * 0.5 + 0.3).toFixed(3);
+
+    // Update cards with latest values
+    function updateCards(indices) {
+      const latest = indices[indices.length - 1] || {};
+      $("#ndviValue").text(latest.ndvi != null ? latest.ndvi.toFixed(3) : 'N/A');
+      $("#eviValue").text(latest.evi != null ? latest.evi.toFixed(3) : 'N/A');
+      $("#saviValue").text(latest.savi != null ? latest.savi.toFixed(3) : 'N/A');
+      $("#moistureValue").text(latest.msi != null ? latest.msi.toFixed(3) : 'N/A');
     }
 
-    // --- Map overlay logic (mock) ---
-    function updateMapOverlay(index, date) {
-      if (window.ndviOverlay) { window.map.removeLayer(window.ndviOverlay); }
-      // Just add a semi-transparent colored rectangle for demo
-      window.ndviOverlay = L.rectangle([[41.87, -93.10], [41.88, -93.09]], {
-        color: indices.find(i => i.key === index).color,
-        weight: 1,
-        fillOpacity: 0.3
-      }).addTo(window.map);
+    // Update charts
+    function updateCharts(indices) {
+      const labels = indices.map(d => d.date);
+      ndviChart.data.labels = labels;
+      ndviChart.data.datasets[0].data = indices.map(d => d.ndvi);
+      ndviChart.update();
+      eviChart.data.labels = labels;
+      eviChart.data.datasets[0].data = indices.map(d => d.evi);
+      eviChart.update();
+      saviChart.data.labels = labels;
+      saviChart.data.datasets[0].data = indices.map(d => d.savi);
+      saviChart.update();
+      moistureChart.data.labels = labels;
+      moistureChart.data.datasets[0].data = indices.map(d => d.msi);
+      moistureChart.update();
     }
 
-    // --- UI logic ---
-    $(function() {
-      // Leaflet Map
-      window.map = L.map('map').setView([41.8781, -93.0977], 15); // Centered on Iowa
-      L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-        maxZoom: 19,
-        attribution: 'Tiles © Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
-      }).addTo(window.map);
-      // Example polygon (Iowa Demo Field boundary)
-      const iowaFieldCoords = [
-        [41.88, -93.10],
-        [41.88, -93.09],
-        [41.87, -93.09],
-        [41.87, -93.10]
-      ];
-      L.polygon(iowaFieldCoords, {color: '#8bb439', fillOpacity: 0.3})
-        .addTo(window.map)
-        .bindPopup('Iowa Demo Field')
-        .openPopup();
-      window.map.fitBounds(iowaFieldCoords);
+    // Show loading/error states
+    function setLoading(isLoading) {
+      $("#ndviValue,#eviValue,#saviValue,#moistureValue").text(isLoading ? '...': 'N/A');
+    }
+    function setError(msg) {
+      $("#ndviValue,#eviValue,#saviValue,#moistureValue").text('N/A');
+      alert(msg);
+    }
 
-      // Set up cards and charts for all indices
-      for (const idx of indices) {
-        // Update card value
-        $(`#${idx.key}Value`).text(getMockLatest(idx.key));
-        // Fetch and render time series
-        const from = new Date();
-        from.setDate(from.getDate() - 30);
-        const to = new Date();
-        const series = generateMockTimeSeries(idx.key, from.toISOString().split('T')[0], to.toISOString().split('T')[0]);
-        const ctx = document.getElementById(`${idx.key}Chart`).getContext('2d');
-        new Chart(ctx, {
-          type: 'line',
-          data: {
-            labels: series.map(d => d.date),
-            datasets: [{
-              label: idx.label,
-              data: series.map(d => d.value),
-              borderColor: idx.color,
-              backgroundColor: idx.color + '22',
-              tension: 0.3,
-              fill: true
-            }]
-          },
-          options: {
-            responsive: true,
-            plugins: { legend: { display: false } },
-            scales: {
-              x: { display: true, title: { display: true, text: 'Date' } },
-              y: { display: true, title: { display: true, text: idx.label } }
-            }
-          }
-        });
+    // On page load, fetch and display real data for last 30 days
+    $(async function() {
+      setLoading(true);
+      try {
+        const today = new Date();
+        const from = formatDate(new Date(today.getTime() - 29*24*60*60*1000));
+        const to = formatDate(today);
+        const raw = await fetchVegetationIndices(from, to);
+        const indices = parseIndicesData(raw);
+        updateCards(indices);
+        updateCharts(indices);
+        setLoading(false);
+      } catch (e) {
+        setError(e.message);
       }
+    });
 
-      // Map variable/date selector logic
-      $('#mapVariableSelect').on('change', function() {
-        const variable = $(this).val();
-        const date = $('#mapDateSelect').val();
-        $('#mapLegend').text(variable.toUpperCase());
-        updateMapOverlay(variable, date);
-      });
-      $('#mapDateSelect').on('change', function() {
-        const variable = $('#mapVariableSelect').val();
-        const date = $(this).val();
-        $('#mapDateLabel').text(date);
-        updateMapOverlay(variable, date);
-      });
+    // Map logic: show Yandina Farm polygon
+    var map = L.map('map').setView([-26.4962, 152.9150], 18);
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+      maxZoom: 19,
+      attribution: 'Tiles © Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+    }).addTo(map);
+    L.polygon(yandinaPolygon.map(([lng, lat]) => [lat, lng]), {color: '#8bb439', fillOpacity: 0.3})
+      .addTo(map)
+      .bindPopup('Yandina Farm')
+      .openPopup();
+    map.fitBounds(yandinaPolygon.map(([lng, lat]) => [lat, lng]));
 
-      // Set up date selector with mock dates
-      const from = new Date();
-      from.setDate(from.getDate() - 30);
-      const to = new Date();
-      const mockDates = generateMockTimeSeries('ndvi', from.toISOString().split('T')[0], to.toISOString().split('T')[0]).map(d => d.date);
-      $('#mapDateSelect').empty();
-      mockDates.forEach(date => {
-        $('#mapDateSelect').append(`<option value="${date}">${date}</option>`);
-      });
-      $('#mapDateSelect').val(mockDates[mockDates.length-1]);
-
-      // Set initial map overlay
-      const initialVar = $('#mapVariableSelect').val();
-      const initialDate = $('#mapDateSelect').val();
-      updateMapOverlay(initialVar, initialDate);
-
-      // Set initial map legend and date
-      $('#mapLegend').text($('#mapVariableSelect').val().toUpperCase());
-      $('#mapDateLabel').text($('#mapDateSelect').val());
-
-      // Enable Bootstrap tooltips
-      var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-      tooltipTriggerList.map(function (tooltipTriggerEl) {
-        return new bootstrap.Tooltip(tooltipTriggerEl);
-      });
+    // Enable Bootstrap tooltips
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.map(function (tooltipTriggerEl) {
+      return new bootstrap.Tooltip(tooltipTriggerEl);
     });
   </script>
 </body>

@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EOSDA API Test</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <div class="container py-4">
+        <h2>EOSDA API Connection Test</h2>
+        
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Test Proxy Connection</h5>
+                    </div>
+                    <div class="card-body">
+                        <button id="testProxy" class="btn btn-primary">Test Proxy</button>
+                        <div id="proxyResult" class="mt-3"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Test EOSDA Weather API</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="dateFrom" class="form-label">Date From:</label>
+                            <input type="datetime-local" id="dateFrom" class="form-control" value="2024-06-16T00:00">
+                        </div>
+                        <div class="mb-3">
+                            <label for="dateTo" class="form-label">Date To:</label>
+                            <input type="datetime-local" id="dateTo" class="form-control" value="2024-06-18T00:00">
+                        </div>
+                        <button id="testEOSDAWeather" class="btn btn-success">Test EOSDA Weather API</button>
+                        <div id="eosdaWeatherResult" class="mt-3"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Test EOSDA Vegetation Indices API</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="vegDateFrom" class="form-label">Date From:</label>
+                            <input type="date" id="vegDateFrom" class="form-control" value="2024-06-01">
+                        </div>
+                        <div class="mb-3">
+                            <label for="vegDateTo" class="form-label">Date To:</label>
+                            <input type="date" id="vegDateTo" class="form-control" value="2024-06-30">
+                        </div>
+                        <button id="testEOSDAVeg" class="btn btn-success">Test EOSDA Vegetation Indices API</button>
+                        <div id="eosdaVegResult" class="mt-3"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Test EOSDA Soil Moisture API</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="smDateFrom" class="form-label">Date From:</label>
+                            <input type="date" id="smDateFrom" class="form-control" value="2024-06-01">
+                        </div>
+                        <div class="mb-3">
+                            <label for="smDateTo" class="form-label">Date To:</label>
+                            <input type="date" id="smDateTo" class="form-control" value="2024-06-30">
+                        </div>
+                        <button id="testEOSDASoilMoisture" class="btn btn-success">Test EOSDA Soil Moisture API</button>
+                        <div id="eosdaSoilMoistureResult" class="mt-3"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Response Details</h5>
+                    </div>
+                    <div class="card-body">
+                        <pre id="responseDetails" class="bg-light p-3 rounded" style="max-height: 400px; overflow-y: auto;"></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        const sampleGeometry = {
+            "type": "Polygon",
+            "coordinates": [[
+                [29.659867, 49.596693],
+                [29.658108, 49.591491],
+                [29.667463, 49.590072],
+                [29.669137, 49.595135],
+                [29.659867, 49.596693]
+            ]]
+        };
+        // EOSDA sample polygon (Ukraine)
+        const samplePolygon = [
+            [29.659867, 49.596693],
+            [29.658108, 49.591491],
+            [29.667463, 49.590072],
+            [29.669137, 49.595135],
+            [29.659867, 49.596693]
+        ];
+        const samplePolygonGeoJSON = {
+            type: 'Polygon',
+            coordinates: [samplePolygon]
+        };
+        $(document).ready(function() {
+            // Test proxy connection
+            $('#testProxy').click(function() {
+                $('#proxyResult').html('<div class="alert alert-info">Testing proxy connection...</div>');
+                
+                fetch('http://localhost:3001/test')
+                    .then(response => response.json())
+                    .then(data => {
+                        $('#proxyResult').html(`<div class="alert alert-success">✅ Proxy is running!<br>Message: ${data.message}<br>Timestamp: ${data.timestamp}</div>`);
+                        $('#responseDetails').text(JSON.stringify(data, null, 2));
+                    })
+                    .catch(error => {
+                        $('#proxyResult').html(`<div class="alert alert-danger">❌ Proxy connection failed: ${error.message}</div>`);
+                        $('#responseDetails').text('Error: ' + error.message);
+                    });
+            });
+            
+            // Test EOSDA Weather API
+            $('#testEOSDAWeather').click(function() {
+                const date_from = $('#dateFrom').val();
+                const date_to = $('#dateTo').val();
+                $('#eosdaWeatherResult').html('<div class="alert alert-info">Testing EOSDA Weather API...</div>');
+                fetch('http://localhost:3001/fetch-weather', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        geometry: sampleGeometry,
+                        date_from: date_from,
+                        date_to: date_to
+                    })
+                })
+                .then(async response => {
+                    let text = await response.text();
+                    try {
+                        let data = JSON.parse(text);
+                        if (data.success) {
+                            $('#eosdaWeatherResult').html(`<div class="alert alert-success">✅ EOSDA Weather API call successful!</div>`);
+                        } else {
+                            $('#eosdaWeatherResult').html(`<div class="alert alert-warning">⚠️ EOSDA Weather API returned: ${data.error || 'Unknown error'}</div>`);
+                        }
+                        $('#responseDetails').text(JSON.stringify(data, null, 2));
+                    } catch (e) {
+                        $('#eosdaWeatherResult').html(`<div class="alert alert-danger">❌ EOSDA Weather API call failed: ${e.message}</div>`);
+                        $('#responseDetails').text('Raw response:\n' + text);
+                    }
+                })
+                .catch(error => {
+                    $('#eosdaWeatherResult').html(`<div class="alert alert-danger">❌ EOSDA Weather API call failed: ${error.message}</div>`);
+                    $('#responseDetails').text('Error: ' + error.message);
+                });
+            });
+            
+            // Test EOSDA Vegetation Indices API
+            $('#testEOSDAVeg').click(function() {
+                const date_start = $('#vegDateFrom').val() + 'T00:00';
+                const date_end = $('#vegDateTo').val() + 'T00:00';
+                $('#eosdaVegResult').html('<div class="alert alert-info">Testing EOSDA Vegetation Indices API (Sample Polygon)...</div>');
+                fetch('http://localhost:3001/fetch-vegetation-indices', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        date_start: date_start,
+                        date_end: date_end,
+                        geometry: samplePolygonGeoJSON,
+                        bm_type: ["NDVI", "EVI", "SAVI", "MSI"],
+                        sensors: ["sentinel2"]
+                    })
+                })
+                .then(async response => {
+                    let text = await response.text();
+                    try {
+                        let data = JSON.parse(text);
+                        if (data.success) {
+                            $('#eosdaVegResult').html(`<div class="alert alert-success">✅ EOSDA Vegetation Indices API call successful (Sample Polygon)!</div>`);
+                        } else {
+                            $('#eosdaVegResult').html(`<div class="alert alert-warning">⚠️ EOSDA Vegetation Indices API returned: ${data.error || 'Unknown error'}</div>`);
+                        }
+                        $('#responseDetails').text(JSON.stringify(data, null, 2));
+                    } catch (e) {
+                        $('#eosdaVegResult').html(`<div class="alert alert-danger">❌ EOSDA Vegetation Indices API call failed: ${e.message}</div>`);
+                        $('#responseDetails').text('Raw response:\n' + text);
+                    }
+                })
+                .catch(error => {
+                    $('#eosdaVegResult').html(`<div class="alert alert-danger">❌ EOSDA Vegetation Indices API call failed: ${error.message}</div>`);
+                    $('#responseDetails').text('Error: ' + error.message);
+                });
+            });
+            
+            // Test EOSDA Soil Moisture API
+            $('#testEOSDASoilMoisture').click(function() {
+                const date_start = $('#smDateFrom').val() + 'T00:00';
+                const date_end = $('#smDateTo').val() + 'T00:00';
+                $('#eosdaSoilMoistureResult').html('<div class="alert alert-info">Testing EOSDA Soil Moisture API (Sample Polygon)...</div>');
+                fetch('http://localhost:3001/fetch-soil-moisture', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        date_start: date_start,
+                        date_end: date_end,
+                        geometry: samplePolygonGeoJSON,
+                        bm_type: "soilmoisture",
+                        sensors: ["soilmoisture"],
+                        limit: 10
+                    })
+                })
+                .then(async response => {
+                    let text = await response.text();
+                    try {
+                        let data = JSON.parse(text);
+                        if (data.success) {
+                            $('#eosdaSoilMoistureResult').html(`<div class="alert alert-success">✅ EOSDA Soil Moisture API call successful (Sample Polygon)!</div>`);
+                        } else {
+                            $('#eosdaSoilMoistureResult').html(`<div class="alert alert-warning">⚠️ EOSDA Soil Moisture API returned: ${data.error || 'Unknown error'}</div>`);
+                        }
+                        $('#responseDetails').text(JSON.stringify(data, null, 2));
+                    } catch (e) {
+                        $('#eosdaSoilMoistureResult').html(`<div class="alert alert-danger">❌ EOSDA Soil Moisture API call failed: ${e.message}</div>`);
+                        $('#responseDetails').text('Raw response:\n' + text);
+                    }
+                })
+                .catch(error => {
+                    $('#eosdaSoilMoistureResult').html(`<div class="alert alert-danger">❌ EOSDA Soil Moisture API call failed: ${error.message}</div>`);
+                    $('#responseDetails').text('Error: ' + error.message);
+                });
+            });
+        });
+    </script>
+</body>
+</html> 

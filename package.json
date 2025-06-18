@@ -1,0 +1,18 @@
+{
+  "name": "eosda-proxy",
+  "version": "1.0.0",
+  "description": "Proxy server for EOSDA API",
+  "main": "ndvi-proxy.js",
+  "scripts": {
+    "start": "node ndvi-proxy.js",
+    "dev": "node ndvi-proxy.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "node-fetch": "^2.6.7",
+    "cors": "^2.8.5"
+  },
+  "keywords": ["eosda", "proxy", "satellite", "imagery"],
+  "author": "",
+  "license": "ISC"
+} 

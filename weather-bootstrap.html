@@ -86,13 +86,13 @@
             <div class="card-body">
               <div class="d-flex align-items-center mb-2">
                 <span class="material-icons highlight me-2">water_drop</span>
-                <span class="card-title">Humidity
-                  <span class="material-icons info-icon ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Humidity is the concentration of water vapor present in the air. It is usually expressed as a percentage (relative humidity) and is a key factor in weather, plant transpiration, and disease development. High humidity can reduce evaporation and increase the risk of plant diseases.">info</span>
+                <span class="card-title">Rain
+                  <span class="material-icons info-icon ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Rainfall is the amount of precipitation that falls from the atmosphere to the ground. It is typically measured in millimeters (mm) and is crucial for crop growth, irrigation planning, and water management. Adequate rainfall is essential for plant development, while excessive rain can lead to waterlogging and disease.">info</span>
                 </span>
                 <span class="badge badge-info ms-2">Current</span>
               </div>
-              <div class="card-value" id="humidityValue">65%</div>
-              <div class="text-muted small">Relative Humidity</div>
+              <div class="card-value" id="rainValue">0 mm</div>
+              <div class="text-muted small">Rainfall</div>
             </div>
           </div>
         </div>
@@ -115,14 +115,14 @@
           <div class="card h-100 border-0 shadow-sm rounded-4">
             <div class="card-body">
               <div class="d-flex align-items-center mb-2">
-                <span class="material-icons highlight me-2">visibility</span>
-                <span class="card-title">Visibility
-                  <span class="material-icons info-icon ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Visibility is the distance at which an object or light can be clearly discerned. It is an important parameter for agricultural operations and is affected by fog, rain, dust, and other atmospheric conditions. Visibility is typically measured in kilometers (km) or miles (mi)."></span>
+                <span class="material-icons highlight me-2">opacity</span>
+                <span class="card-title">Humidity
+                  <span class="material-icons info-icon ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Humidity is the concentration of water vapor present in the air. It is usually expressed as a percentage (relative humidity) and is a key factor in weather, plant transpiration, and disease development. High humidity can reduce evaporation and increase the risk of plant diseases.">info</span>
                 </span>
                 <span class="badge badge-info ms-2">Current</span>
               </div>
-              <div class="card-value" id="visValue">10 km</div>
-              <div class="text-muted small">Visibility</div>
+              <div class="card-value" id="humidityValue">65%</div>
+              <div class="text-muted small">Relative Humidity</div>
             </div>
           </div>
         </div>
@@ -152,10 +152,10 @@
         <canvas id="tempChart" height="120"></canvas>
       </div>
       <div class="bg-white p-3 rounded-4 shadow-sm mb-4">
-        <h6 class="mb-2">Humidity Time Series
-          <span class="material-icons info-icon ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Humidity is the concentration of water vapor present in the air. It is usually expressed as a percentage (relative humidity) and is a key factor in weather, plant transpiration, and disease development. High humidity can reduce evaporation and increase the risk of plant diseases.">info</span>
+        <h6 class="mb-2">Rain Time Series
+          <span class="material-icons info-icon ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Rainfall is the amount of precipitation that falls from the atmosphere to the ground. It is typically measured in millimeters (mm) and is crucial for crop growth, irrigation planning, and water management. Adequate rainfall is essential for plant development, while excessive rain can lead to waterlogging and disease.">info</span>
         </h6>
-        <canvas id="humidityChart" height="120"></canvas>
+        <canvas id="rainChart" height="120"></canvas>
       </div>
       <div class="bg-white p-3 rounded-4 shadow-sm mb-4">
         <h6 class="mb-2">Wind Speed Time Series
@@ -164,10 +164,10 @@
         <canvas id="windChart" height="120"></canvas>
       </div>
       <div class="bg-white p-3 rounded-4 shadow-sm mb-4">
-        <h6 class="mb-2">Visibility Time Series
-          <span class="material-icons info-icon ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Visibility is the distance at which an object or light can be clearly discerned. It is an important parameter for agricultural operations and is affected by fog, rain, dust, and other atmospheric conditions. Visibility is typically measured in kilometers (km) or miles (mi).">info</span>
+        <h6 class="mb-2">Humidity Time Series
+          <span class="material-icons info-icon ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Humidity is the concentration of water vapor present in the air. It is usually expressed as a percentage (relative humidity) and is a key factor in weather, plant transpiration, and disease development. High humidity can reduce evaporation and increase the risk of plant diseases.">info</span>
         </h6>
-        <canvas id="visChart" height="120"></canvas>
+        <canvas id="humidityChart" height="120"></canvas>
       </div>
     </div>
   </div>
@@ -180,57 +180,88 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script>
-    // --- MOCK DATA GENERATION ---
-    function generateMockWeatherSeries(fromDate, toDate) {
-      const dates = [];
-      let d = new Date(fromDate);
-      const end = new Date(toDate);
-      while (d <= end) {
-        dates.push(new Date(d));
-        d.setDate(d.getDate() + 1); // daily
-      }
-      return dates.map(date => ({
-        date: date.toISOString().split('T')[0],
-        temperature: (Math.random() * 15 + 10).toFixed(1),
-        humidity: (Math.random() * 40 + 40).toFixed(0),
-        wind: (Math.random() * 5 + 2).toFixed(1),
-        visibility: (Math.random() * 5 + 5).toFixed(1)
-      }));
+    // Yandina Farm polygon (longitude, latitude)
+    const yandinaPolygon = [
+      [152.9148355104133, -26.49630785386763],
+      [152.9149951437186, -26.49644491790693],
+      [152.9150826047683, -26.49643498282219],
+      [152.915136003929, -26.49647654096426],
+      [152.9151679717066, -26.49641027369633],
+      [152.9151522879532, -26.4963066956674],
+      [152.9151405649811, -26.49617943071427],
+      [152.9151330645278, -26.49603918146022],
+      [152.9150405267262, -26.49598117140157],
+      [152.9149028386955, -26.49619458038391],
+      [152.9148355104133, -26.49630785386763]
+    ];
+
+    // Helper: convert polygon to Leaflet format (lat, lng)
+    const yandinaPolygonLatLng = yandinaPolygon.map(([lng, lat]) => [lat, lng]);
+
+    // Helper: get today's date in YYYY-MM-DD
+    function todayStr() {
+      return new Date().toISOString().split('T')[0];
     }
-    function getMockCurrentWeather() {
-      return {
-        temperature: (Math.random() * 15 + 10).toFixed(1),
-        humidity: (Math.random() * 40 + 40).toFixed(0),
-        wind: (Math.random() * 5 + 2).toFixed(1),
-        visibility: (Math.random() * 5 + 5).toFixed(1)
-      };
+
+    // Helper: get date N days ago in YYYY-MM-DD
+    function daysAgoStr(days) {
+      const d = new Date();
+      d.setDate(d.getDate() - days);
+      return d.toISOString().split('T')[0];
+    }
+
+    // Fetch real EOSDA weather data (forecast, for current value and time series)
+    async function fetchWeatherEOSDA(from, to) {
+      const date_from = from + 'T00:00';
+      const date_to = to + 'T00:00';
+      const res = await fetch('http://localhost:3001/fetch-weather', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ date_from, date_to })
+      });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.error || 'Failed to fetch EOSDA weather');
+      return data.data;
+    }
+
+    // Parse EOSDA weather data to chart format
+    function parseEOSDAWeather(data) {
+      return data.map(d => ({
+        date: d.Date,
+        temperature: ((d.Temp_air_min + d.Temp_air_max) / 2).toFixed(1),
+        humidity: d.Rel_humidity ? d.Rel_humidity.toFixed(0) : '',
+        rain: d.Rain ? (Object.values(d.Rain).reduce((a, b) => a + b, 0)).toFixed(1) : '0',
+        wind: d.Windspeed ? (Object.values(d.Windspeed).reduce((a, b) => a + b, 0) / Object.values(d.Windspeed).length).toFixed(1) : ''
+      }));
     }
 
     let allData = [];
-    let tempChart, humidityChart, windChart, visChart;
+    let tempChart, rainChart, windChart, humidityChart;
 
     function updateCharts(filteredData) {
       tempChart.data.labels = filteredData.map(d => d.date);
       tempChart.data.datasets[0].data = filteredData.map(d => d.temperature);
       tempChart.update();
-      humidityChart.data.labels = filteredData.map(d => d.date);
-      humidityChart.data.datasets[0].data = filteredData.map(d => d.humidity);
-      humidityChart.update();
+      rainChart.data.labels = filteredData.map(d => d.date);
+      rainChart.data.datasets[0].data = filteredData.map(d => d.rain);
+      rainChart.update();
       windChart.data.labels = filteredData.map(d => d.date);
       windChart.data.datasets[0].data = filteredData.map(d => d.wind);
       windChart.update();
-      visChart.data.labels = filteredData.map(d => d.date);
-      visChart.data.datasets[0].data = filteredData.map(d => d.visibility);
-      visChart.update();
+      humidityChart.data.labels = filteredData.map(d => d.date);
+      humidityChart.data.datasets[0].data = filteredData.map(d => d.humidity);
+      humidityChart.update();
     }
 
-    $(function() {
-      // Set up chart date range selectors (default: last 30 days)
+    $(async function() {
+      // Set up chart date range selectors (default: today, tomorrow, day after)
       const today = new Date();
-      const prior = new Date();
-      prior.setDate(today.getDate() - 29);
-      const startDate = prior.toISOString().split('T')[0];
-      const endDate = today.toISOString().split('T')[0];
+      const tomorrow = new Date(today);
+      tomorrow.setDate(today.getDate() + 1);
+      const dayAfter = new Date(today);
+      dayAfter.setDate(today.getDate() + 2);
+      const startDate = today.toISOString().split('T')[0];
+      const endDate = dayAfter.toISOString().split('T')[0];
       $('#chartFromDate').val(startDate);
       $('#chartToDate').val(endDate);
 
@@ -240,66 +271,67 @@
         data: { labels: [], datasets: [{ label: 'Temperature', data: [], borderColor: '#f87171', backgroundColor: 'rgba(248,113,113,0.1)', tension: 0.3, fill: true }] },
         options: { responsive: true, plugins: { legend: { display: false } }, scales: { x: { display: true, title: { display: true, text: 'Date' } }, y: { display: true, title: { display: true, text: 'Temperature (°C)' } } } }
       });
-      humidityChart = new Chart(document.getElementById('humidityChart').getContext('2d'), {
+      rainChart = new Chart(document.getElementById('rainChart').getContext('2d'), {
         type: 'line',
-        data: { labels: [], datasets: [{ label: 'Humidity', data: [], borderColor: '#60a5fa', backgroundColor: 'rgba(96,165,250,0.1)', tension: 0.3, fill: true }] },
-        options: { responsive: true, plugins: { legend: { display: false } }, scales: { x: { display: true, title: { display: true, text: 'Date' } }, y: { display: true, title: { display: true, text: 'Humidity (%)' } } } }
+        data: { labels: [], datasets: [{ label: 'Rainfall', data: [], borderColor: '#60a5fa', backgroundColor: 'rgba(96,165,250,0.1)', tension: 0.3, fill: true }] },
+        options: { responsive: true, plugins: { legend: { display: false } }, scales: { x: { display: true, title: { display: true, text: 'Date' } }, y: { display: true, title: { display: true, text: 'Rainfall (mm)' } } } }
       });
       windChart = new Chart(document.getElementById('windChart').getContext('2d'), {
         type: 'line',
         data: { labels: [], datasets: [{ label: 'Wind Speed', data: [], borderColor: '#34d399', backgroundColor: 'rgba(52,211,153,0.1)', tension: 0.3, fill: true }] },
         options: { responsive: true, plugins: { legend: { display: false } }, scales: { x: { display: true, title: { display: true, text: 'Date' } }, y: { display: true, title: { display: true, text: 'Wind Speed (m/s)' } } } }
       });
-      visChart = new Chart(document.getElementById('visChart').getContext('2d'), {
+      humidityChart = new Chart(document.getElementById('humidityChart').getContext('2d'), {
         type: 'line',
-        data: { labels: [], datasets: [{ label: 'Visibility', data: [], borderColor: '#fbbf24', backgroundColor: 'rgba(251,191,36,0.1)', tension: 0.3, fill: true }] },
-        options: { responsive: true, plugins: { legend: { display: false } }, scales: { x: { display: true, title: { display: true, text: 'Date' } }, y: { display: true, title: { display: true, text: 'Visibility (km)' } } } }
+        data: { labels: [], datasets: [{ label: 'Humidity', data: [], borderColor: '#fbbf24', backgroundColor: 'rgba(251,191,36,0.1)', tension: 0.3, fill: true }] },
+        options: { responsive: true, plugins: { legend: { display: false } }, scales: { x: { display: true, title: { display: true, text: 'Date' } }, y: { display: true, title: { display: true, text: 'Humidity (%)' } } } }
       });
 
-      // Set mock current weather
-      const current = getMockCurrentWeather();
-      $('#tempValue').text(current.temperature + '°C');
-      $('#humidityValue').text(current.humidity + '%');
-      $('#windValue').text(current.wind + ' m/s');
-      $('#visValue').text(current.visibility + ' km');
+      // Fetch and display real EOSDA weather for charts and cards
+      async function loadAndDisplayWeather(from, to) {
+        try {
+          // Fetch forecast for time series and cards
+          const eosdaData = await fetchWeatherEOSDA(from, to);
+          allData = parseEOSDAWeather(eosdaData);
+          updateCharts(allData);
+          // Set current values (latest date)
+          const latest = allData[allData.length - 1];
+          $('#tempValue').text(latest.temperature + '°C');
+          $('#rainValue').text(latest.rain + ' mm');
+          $('#windValue').text(latest.wind + ' m/s');
+          $('#humidityValue').text(latest.humidity + '%');
+        } catch (e) {
+          $('#tempValue').text('N/A');
+          $('#rainValue').text('N/A');
+          $('#windValue').text('N/A');
+          $('#humidityValue').text('N/A');
+          updateCharts([]);
+          alert('Failed to load EOSDA weather: ' + e.message);
+        }
+      }
 
-      // Generate and display mock historical weather for charts
-      allData = generateMockWeatherSeries(startDate, endDate);
-      // Populate map date selector
-      $('#mapDateSelect').empty();
-      allData.forEach(d => {
-        $('#mapDateSelect').append(`<option value="${d.date}">${d.date}</option>`);
-      });
-      $('#mapDateSelect').val(allData[allData.length - 1].date);
-      $('#mapDateLabel').text(allData[allData.length - 1].date);
-      updateCharts(allData);
+      // Initial load
+      await loadAndDisplayWeather(startDate, endDate);
 
       // Date range filter for charts
-      $('#applyDateRange').on('click', function() {
+      $('#applyDateRange').on('click', async function() {
         const from = $('#chartFromDate').val();
         const to = $('#chartToDate').val();
-        allData = generateMockWeatherSeries(from, to);
-        updateCharts(allData);
+        await loadAndDisplayWeather(from, to);
       });
 
       // Leaflet Map
-      var map = L.map('map').setView([41.8781, -93.0977], 6); // Centered on Iowa
+      var map = L.map('map').setView([-26.4962, 152.9150], 18); // Centered on Yandina Farm
       L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
         maxZoom: 19,
         attribution: 'Tiles © Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
       }).addTo(map);
-      // Example polygon (Iowa Demo Field boundary)
-      const iowaFieldCoords = [
-        [41.88, -93.10],
-        [41.88, -93.09],
-        [41.87, -93.09],
-        [41.87, -93.10]
-      ];
-      L.polygon(iowaFieldCoords, {color: '#8bb439', fillOpacity: 0.3})
+      // Yandina Farm polygon
+      L.polygon(yandinaPolygonLatLng, {color: '#8bb439', fillOpacity: 0.3})
         .addTo(map)
-        .bindPopup('Iowa Demo Field')
+        .bindPopup('Yandina Farm')
         .openPopup();
-      map.fitBounds(iowaFieldCoords);
+      map.fitBounds(yandinaPolygonLatLng);
 
       // Enable Bootstrap tooltips
       var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));

@@ -33,6 +33,36 @@
       cursor: pointer;
       vertical-align: middle;
     }
+    .expand-icon {
+      transition: transform 0.3s ease;
+    }
+    .expand-icon.collapsed {
+      transform: rotate(-90deg);
+    }
+    .text-success {
+      color: #8bb439 !important;
+    }
+    .btn-outline-success {
+      color: #8bb439 !important;
+      border-color: #8bb439 !important;
+    }
+    .btn-outline-success:hover {
+      background-color: #8bb439 !important;
+      color: #fff !important;
+    }
+    .bg-success {
+      background-color: #8bb439 !important;
+    }
+    .btn-main-green {
+      background-color: #8bb439 !important;
+      border-color: #8bb439 !important;
+      color: #fff !important;
+    }
+    .btn-main-green:hover, .btn-main-green:focus {
+      background-color: #7aa32f !important;
+      border-color: #7aa32f !important;
+      color: #fff !important;
+    }
   </style>
 </head>
 <body class="bg-light">
@@ -41,6 +71,60 @@
     <div class="mb-3 p-4 bg-white rounded-4 shadow-sm">
       <h2 class="mb-1 fw-bold">Growing Degree Days</h2>
       <p class="text-muted mb-0">Use growing degree days to anticipate pest and disease development, optimize biofix timing, and improve risk management decisions for your crops.</p>
+    </div>
+
+    <!-- Introduction Section -->
+    <div class="mb-4 bg-white p-4 rounded-4 shadow-sm">
+      <div class="d-flex align-items-center mb-2">
+        <h5 class="mb-0 fw-bold">How to Use This Tool</h5>
+        <button class="btn btn-sm btn-outline-secondary ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#introCollapse" aria-expanded="false" aria-controls="introCollapse">
+          <span class="material-icons expand-icon collapsed">expand_more</span>
+        </button>
+      </div>
+      <div class="collapse" id="introCollapse">
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <h6 class="fw-bold text-success">What are Growing Degree Days (GDD)?</h6>
+            <p class="text-muted small mb-2">GDD measure heat accumulation above a base temperature to predict pest and disease development. Each pest has specific GDD thresholds for different life stages.</p>
+          </div>
+          <div class="col-md-6 mb-3">
+            <h6 class="fw-bold text-success">How to Interpret the Data</h6>
+            <ul class="text-muted small mb-0">
+              <li><strong>Current Growth Stage:</strong> Shows where your pest is in its development cycle</li>
+              <li><strong>All Growth Stages:</strong> Expand to see the complete progression</li>
+              <li><strong>Chart:</strong> Visualizes GDD accumulation over time</li>
+              <li><strong>Risk Level:</strong> Indicates infection risk based on current conditions</li>
+            </ul>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <h6 class="fw-bold text-success">Setting Up Your Analysis</h6>
+            <ol class="text-muted small mb-0">
+              <li><strong>Select Farm/Paddock:</strong> Choose your location</li>
+              <li><strong>Choose Pest/Disease:</strong> Select the specific pest you're monitoring</li>
+              <li><strong>Set Biofix Date:</strong> <span class="text-success fw-bold">CRITICAL</span> - Enter the date when pest activity first began (e.g., first adult emergence). This is the starting point for all GDD calculations.</li>
+            </ol>
+          </div>
+          <div class="col-md-6 mb-3">
+            <h6 class="fw-bold text-success">Making Management Decisions</h6>
+            <ul class="text-muted small mb-0">
+              <li>Use the <strong>Current Stage</strong> to time treatments</li>
+              <li>Monitor <strong>Risk Level</strong> for treatment urgency</li>
+              <li>Check <strong>Biological Recommendations</strong> for product suggestions</li>
+              <li>Review the <strong>Chart</strong> to see development trends</li>
+            </ul>
+          </div>
+        </div>
+        <div class="alert alert-info mt-3 mb-0">
+          <div class="d-flex align-items-start">
+            <span class="material-icons me-2">info</span>
+            <div class="small">
+              <strong>Pro Tip:</strong> <span class="fw-bold">The biofix date is the most critical setting</span> - this determines when GDD accumulation begins and affects all predictions. Set your biofix date accurately based on when you first observed the pest or when a specific biological event occurred (like first adult emergence or first egg laying). Click the "How to Set" button next to the biofix field for detailed guidance.
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Filters (Farm/Paddock, GDD Base, Pest, Biofix) -->
@@ -54,20 +138,85 @@
       <select id="paddockSelect" class="form-select w-auto me-3">
         <option value="1">Iowa Demo Field</option>
       </select>
-      <label for="gddBaseSelect" class="form-label mb-0 me-2">GDD Base:
-        <span class="material-icons info-icon ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="The GDD base is the minimum temperature threshold for crop growth. Most crops use 10°C, but some use 5°C. Choose the base that matches your crop or pest.">info</span>
-      </label>
-      <select id="gddBaseSelect" class="form-select w-auto me-3">
-        <option value="10">10°C</option>
-        <option value="5">5°C</option>
-      </select>
-      <label for="pestSelect" class="form-label mb-0 me-2">Pest:</label>
+      <label for="pestSelect" class="form-label mb-0 me-2">Pest/Disease:</label>
       <select id="pestSelect" class="form-select w-auto me-3">
-        <option value="ascospore">Fungus Ascospore</option>
+        <option value="ascospore">Apple Scab</option>
         <option value="other">Other Pest</option>
       </select>
-      <label for="biofixFrom" class="form-label mb-0 me-2">Biofix:</label>
-      <input type="date" id="biofixFrom" class="form-control w-auto">
+      <div class="d-flex align-items-center">
+        <label for="biofixFrom" class="form-label mb-0 me-2">
+          <span class="fw-bold text-success">Biofix Date:</span>
+          <span class="material-icons info-icon ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="The biofix date is when GDD accumulation begins. This is typically the date of first adult emergence, first egg laying, or another key biological event. Setting this correctly is crucial for accurate predictions.">info</span>
+        </label>
+        <input type="date" id="biofixFrom" class="form-control w-auto me-2">
+        <button type="button" class="btn btn-sm btn-outline-success" data-bs-toggle="modal" data-bs-target="#biofixModal">
+          <span class="material-icons">help</span> How to Set
+        </button>
+      </div>
+    </div>
+
+    <!-- Biofix Help Modal -->
+    <div class="modal fade" id="biofixModal" tabindex="-1" aria-labelledby="biofixModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="biofixModalLabel">Setting Your Biofix Date</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div class="alert alert-warning">
+              <strong>Important:</strong> The biofix date is the starting point for all GDD calculations. Setting this incorrectly will lead to inaccurate predictions.
+            </div>
+            
+            <h6 class="fw-bold text-success">What is a Biofix Date?</h6>
+            <p>A biofix date is the date when GDD accumulation begins for a specific pest or disease. It's typically based on a key biological event that signals the start of the pest's development cycle.</p>
+            
+            <h6 class="fw-bold text-success">How to Determine Your Biofix Date:</h6>
+            <div class="row">
+              <div class="col-md-6">
+                <h6 class="fw-bold">For Apple Scab:</h6>
+                <ul class="small">
+                  <li><strong>First Ascospore Discharge:</strong> When the first mature ascospores are released from overwintering leaves</li>
+                  <li><strong>Green Tip Stage:</strong> When apple buds show green tip (alternative method)</li>
+                  <li><strong>Historical Data:</strong> Use the average date from previous years in your region</li>
+                </ul>
+              </div>
+              <div class="col-md-6">
+                <h6 class="fw-bold">For Other Pests:</h6>
+                <ul class="small">
+                  <li><strong>First Adult Emergence:</strong> When you first see adult pests in the field</li>
+                  <li><strong>First Egg Laying:</strong> When you first observe eggs</li>
+                  <li><strong>First Larval Activity:</strong> When larvae first become active</li>
+                  <li><strong>Phenological Indicators:</strong> When specific plants bloom or bud</li>
+                </ul>
+              </div>
+            </div>
+            
+            <h6 class="fw-bold text-success">Tips for Accurate Biofix Setting:</h6>
+            <ul>
+              <li>Monitor your field regularly for the first signs of pest activity</li>
+              <li>Use pheromone traps to detect first adult emergence</li>
+              <li>Consult local extension services for regional biofix dates</li>
+              <li>Keep records of biofix dates from previous years</li>
+              <li>When in doubt, use the earliest date you observe activity</li>
+            </ul>
+            
+            <div class="alert alert-info">
+              <strong>Pro Tip:</strong> If you're unsure about your biofix date, start with a conservative estimate (earlier date) and adjust based on field observations. It's better to start counting too early than too late.
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-main-green" data-bs-dismiss="modal">I Understand</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Map Placeholder -->
+    <div class="bg-white p-4 rounded-4 shadow-sm mb-4">
+      <h5 class="mb-3">Map View</h5>
+      <div id="map" style="height: 300px; width: 100%;"></div>
     </div>
 
     <!-- Current Growth Stage Card -->
@@ -80,8 +229,82 @@
           </div>
           <div class="fs-4 fw-bold" id="growthStageTitle">7% Ascospore Maturation</div>
           <hr class="my-2">
+          <div><b>Today's GDD:</b> <span id="todaysGddValue">15</span></div>
+          <div><b>Accumulated GDD:</b> <span id="accumulatedGddValue">250</span></div>
           <div><b>GDD:</b> <span id="growthStageRange">201 - 300</span></div>
           <div><b id="growthStagePestLabel">Fungus Ascospore:</b> <span id="growthStageDesc">7% Ascospore Maturation.</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- All Growth Stages Section -->
+    <div class="mb-4">
+      <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-body">
+          <div class="d-flex align-items-center mb-2">
+            <span class="material-icons highlight me-2">list</span>
+            <span class="fw-bold">All Growth Stages</span>
+            <button class="btn btn-sm btn-outline-secondary ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#growthStagesCollapse" aria-expanded="false" aria-controls="growthStagesCollapse">
+              <span class="material-icons expand-icon">expand_more</span>
+            </button>
+          </div>
+          <div class="collapse" id="growthStagesCollapse">
+            <div id="allGrowthStages">
+              <!-- Growth stages will be inserted here -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Risk Level Card -->
+    <div class="mb-4">
+      <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-body">
+          <div class="d-flex align-items-center mb-2">
+            <span class="material-icons highlight me-2">warning</span>
+            <span class="fw-bold">Risk Level</span>
+          </div>
+          <div class="fs-4 fw-bold" id="riskLevelValue">Low</div>
+          <hr class="my-2">
+          <div id="riskLevelDesc">Conditions are not favorable for pest/disease activity.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Continuous Monitoring Reminder -->
+    <div class="mb-4">
+      <div class="card border-0 shadow-sm rounded-4" style="border-left: 4px solid #8bb439 !important;">
+        <div class="card-body">
+          <div class="d-flex align-items-start">
+            <span class="material-icons highlight me-2 mt-1">monitoring</span>
+            <div>
+              <h6 class="fw-bold mb-2">Continuous Monitoring is Essential</h6>
+              <p class="text-muted small mb-2">
+                <strong>Remember:</strong> GDD predictions are tools to guide your monitoring, but they cannot replace regular field scouting and observation. Always verify predictions with actual field conditions.
+              </p>
+              <div class="row">
+                <div class="col-md-6">
+                  <h6 class="fw-bold text-success small">What to Monitor:</h6>
+                  <ul class="text-muted small mb-0">
+                    <li>Visual signs of pest/disease presence</li>
+                    <li>Population levels and distribution</li>
+                    <li>Plant damage symptoms</li>
+                    <li>Weather conditions and microclimate</li>
+                  </ul>
+                </div>
+                <div class="col-md-6">
+                  <h6 class="fw-bold text-success small">Monitoring Frequency:</h6>
+                  <ul class="text-muted small mb-0">
+                    <li>Weekly during growing season</li>
+                    <li>More frequent during high-risk periods</li>
+                    <li>After weather events</li>
+                    <li>Before and after treatments</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -94,21 +317,20 @@
             <span class="material-icons highlight me-2">eco</span>
             <span class="fw-bold">Biological Recommendations</span>
           </div>
+          <div class="alert alert-warning mb-3">
+            <div class="d-flex align-items-start">
+              <span class="material-icons me-2">warning</span>
+              <div class="small">
+                <strong>Note:</strong> These recommendations are based on the current stage of the selected pest/disease. Recommendations may vary for different stages of development.
+              </div>
+            </div>
+          </div>
           <div id="bioRecs">
             <!-- Recommendations will be inserted here -->
           </div>
         </div>
       </div>
     </div>
-
-    <!-- Map Placeholder -->
-    <div class="bg-white p-4 rounded-4 shadow-sm mb-4">
-      <h5 class="mb-3">Map View</h5>
-      <div id="map" style="height: 300px; width: 100%;"></div>
-    </div>
-
-    <!-- Chart Controls (below map) -->
-    <!-- Date range filters removed as requested -->
 
     <!-- Charts stacked vertically -->
     <div class="mb-4">
@@ -129,50 +351,36 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script>
-    // --- MOCK DATA GENERATION ---
-    function generateMockGDDSeries(fromDate, toDate) {
-      const dates = [];
-      let d = new Date(fromDate);
-      const end = new Date(toDate);
-      while (d <= end) {
-        dates.push(new Date(d));
-        d.setDate(d.getDate() + 1); // daily
-      }
-      
-      let cumulativeGDD10 = 800; // Starting value
-      let cumulativeGDD5 = 1200; // Starting value
-      
-      return dates.map((date, index) => {
-        // Generate daily GDD values
-        const dailyGDD10 = Math.max(0, (Math.random() * 8 + 8) - 10); // Base 10°C
-        const dailyGDD5 = Math.max(0, (Math.random() * 8 + 8) - 5);   // Base 5°C
-        
-        cumulativeGDD10 += dailyGDD10;
-        cumulativeGDD5 += dailyGDD5;
-        
-        // Calculate days to maturity (decreasing over time)
-        const maturityDays = Math.max(0, 120 - index * 1.5 + (Math.random() * 10 - 5));
-        
-        // Calculate GDD rate (weekly average)
-        const weeklyRate = (Math.random() * 5 + 10).toFixed(1);
-        
+    // --- GDD Calculation from real weather data ---
+    async function fetchWeatherEOSDA(from, to) {
+      const date_from = from + 'T00:00';
+      const date_to = to + 'T00:00';
+      const res = await fetch('http://localhost:3001/fetch-weather', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ date_from, date_to })
+      });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.error || 'Failed to fetch EOSDA weather');
+      return data.data;
+    }
+
+    // Calculate daily and accumulated GDD from weather data
+    function calculateGDDSeries(weatherData, base) {
+      let accum = 0;
+      return weatherData.map(d => {
+        // Use air temperature min/max (in °C)
+        const tmin = d.Temp_air_min;
+        const tmax = d.Temp_air_max;
+        let gdd = ((tmax + tmin) / 2) - base;
+        if (gdd < 0) gdd = 0;
+        accum += gdd;
         return {
-          date: date.toISOString().split('T')[0],
-          gdd10: Math.round(cumulativeGDD10),
-          gdd5: Math.round(cumulativeGDD5),
-          maturity: Math.round(maturityDays),
-          rate: parseFloat(weeklyRate)
+          date: d.Date,
+          gdd: Math.round(accum),
+          dailyGdd: Math.round(gdd)
         };
       });
-    }
-    
-    function getMockCurrentGDD() {
-      return {
-        gdd10: Math.round(Math.random() * 500 + 1000),
-        gdd5: Math.round(Math.random() * 500 + 1500),
-        maturity: Math.round(Math.random() * 30 + 30),
-        rate: (Math.random() * 5 + 10).toFixed(1)
-      };
     }
 
     let allData = [];
@@ -180,70 +388,85 @@
 
     function updateAccumGddChart(filteredData) {
       accumGddChart.data.labels = filteredData.map(d => d.date);
-      // Use selected base
-      const base = $('#gddBaseSelect').val();
-      accumGddChart.data.datasets[0].data = filteredData.map(d => base === '10' ? d.gdd10 : d.gdd5);
+      accumGddChart.data.datasets[0].data = filteredData.map(d => d.gdd);
       accumGddChart.update();
     }
 
-    $(function() {
-      // Set up chart date range selectors (default: last 30 days)
+    async function loadAndDisplayGDD() {
       const today = new Date();
       const prior = new Date();
       prior.setDate(today.getDate() - 29);
       const startDate = prior.toISOString().split('T')[0];
       const endDate = today.toISOString().split('T')[0];
-      $('#chartFromDate').val(startDate);
-      $('#chartToDate').val(endDate);
+      try {
+        const weather = await fetchWeatherEOSDA(startDate, endDate);
+        const base = 10; // Hardcoded to 10°C
+        allData = calculateGDDSeries(weather, base);
+        updateAccumGddChart(allData);
+        // Update growth stage and risk cards
+        updateGrowthStageCard();
+        updateRiskLevelCard();
+        updateAllGrowthStages();
+      } catch (e) {
+        alert('Failed to load weather data: ' + e.message);
+      }
+    }
 
+    $(function() {
       // Initialize Accumulated GDD chart
       accumGddChart = new Chart(document.getElementById('accumGddChart').getContext('2d'), {
         type: 'line',
-        data: { labels: [], datasets: [{ label: 'Accumulated GDD', data: [], borderColor: '#f87171', backgroundColor: 'rgba(248,113,113,0.1)', tension: 0.3, fill: true }] },
+        data: { labels: [], datasets: [{ label: 'Accumulated GDD', data: [], borderColor: '#8bb439', backgroundColor: 'rgba(139,180,57,0.1)', tension: 0.3, fill: true }] },
         options: { responsive: true, plugins: { legend: { display: false } }, scales: { x: { display: true, title: { display: true, text: 'Date' } }, y: { display: true, title: { display: true, text: 'Accumulated GDD' } } } }
       });
-
-      // Generate and display mock historical GDD data for chart
-      allData = generateMockGDDSeries(startDate, endDate);
-      updateAccumGddChart(allData);
-
-      // Date range filter for chart
-      $('#applyDateRange').on('click', function() {
-        const from = $('#chartFromDate').val();
-        const to = $('#chartToDate').val();
-        allData = generateMockGDDSeries(from, to);
-        updateAccumGddChart(allData);
-      });
-
-      // Update chart when base changes
-      $('#gddBaseSelect').on('change', function() {
-        updateAccumGddChart(allData);
-      });
+      loadAndDisplayGDD();
 
       // Leaflet Map
-      var map = L.map('map').setView([41.8781, -93.0977], 6); // Centered on Iowa
+      var map = L.map('map').setView([-26.4962, 152.9150], 18); // Centered on Yandina Farm
       L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
         maxZoom: 19,
         attribution: 'Tiles © Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
       }).addTo(map);
-      
-      // Example polygon (Iowa Demo Field boundary)
-      const iowaFieldCoords = [
-        [41.88, -93.10],
-        [41.88, -93.09],
-        [41.87, -93.09],
-        [41.87, -93.10]
+      // Yandina Farm polygon coordinates (longitude, latitude)
+      const yandinaCoords = [
+        [-26.49630785386763, 152.9148355104133],
+        [-26.49644491790693, 152.9149951437186],
+        [-26.49643498282219, 152.9150826047683],
+        [-26.49647654096426, 152.915136003929],
+        [-26.49641027369633, 152.9151679717066],
+        [-26.4963066956674, 152.9151522879532],
+        [-26.49617943071427, 152.9151405649811],
+        [-26.49603918146022, 152.9151330645278],
+        [-26.49598117140157, 152.9150405267262],
+        [-26.49619458038391, 152.9149028386955],
+        [-26.49630785386763, 152.9148355104133]
       ];
-      L.polygon(iowaFieldCoords, {color: '#8bb439', fillOpacity: 0.3})
+      L.polygon(yandinaCoords, {color: '#8bb439', fillOpacity: 0.3})
         .addTo(map)
-        .bindPopup('Iowa Demo Field')
+        .bindPopup('Yandina Farm')
         .openPopup();
-      map.fitBounds(iowaFieldCoords);
+      map.fitBounds(yandinaCoords);
 
       // Enable Bootstrap tooltips
       var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
       tooltipTriggerList.map(function (tooltipTriggerEl) {
         return new bootstrap.Tooltip(tooltipTriggerEl);
+      });
+
+      // Handle expand/collapse button icon rotation
+      $('#growthStagesCollapse').on('show.bs.collapse', function () {
+        $('.expand-icon').removeClass('collapsed');
+      });
+      $('#growthStagesCollapse').on('hide.bs.collapse', function () {
+        $('.expand-icon').addClass('collapsed');
+      });
+
+      // Handle introduction section expand/collapse button icon rotation
+      $('#introCollapse').on('show.bs.collapse', function () {
+        $(this).prev().find('.expand-icon').removeClass('collapsed');
+      });
+      $('#introCollapse').on('hide.bs.collapse', function () {
+        $(this).prev().find('.expand-icon').addClass('collapsed');
       });
     });
 
@@ -256,13 +479,6 @@
           { min: 301, max: 500, title: '20% Ascospore Maturation', desc: '20% Ascospore Maturation.' },
           { min: 501, max: 800, title: '50% Ascospore Maturation', desc: '50% Ascospore Maturation.' },
           { min: 801, max: 2000, title: 'Mature', desc: 'Full ascospore maturity.' }
-        ],
-        5: [
-          { min: 0, max: 300, title: 'Dormant', desc: 'No ascospore maturation.' },
-          { min: 301, max: 400, title: '7% Ascospore Maturation', desc: '7% Ascospore Maturation.' },
-          { min: 401, max: 700, title: '20% Ascospore Maturation', desc: '20% Ascospore Maturation.' },
-          { min: 701, max: 1200, title: '50% Ascospore Maturation', desc: '50% Ascospore Maturation.' },
-          { min: 1201, max: 3000, title: 'Mature', desc: 'Full ascospore maturity.' }
         ]
       },
       other: {
@@ -270,55 +486,104 @@
           { min: 0, max: 400, title: 'Egg Laying', desc: 'Pest is laying eggs.' },
           { min: 401, max: 900, title: 'Larval Stage', desc: 'Larvae are active.' },
           { min: 901, max: 2000, title: 'Adult', desc: 'Adults present.' }
-        ],
-        5: [
-          { min: 0, max: 600, title: 'Egg Laying', desc: 'Pest is laying eggs.' },
-          { min: 601, max: 1200, title: 'Larval Stage', desc: 'Larvae are active.' },
-          { min: 1201, max: 3000, title: 'Adult', desc: 'Adults present.' }
         ]
       }
     };
 
     function updateGrowthStageCard() {
-      const base = $('#gddBaseSelect').val();
+      const base = 10; // Hardcoded to 10°C
       const pest = $('#pestSelect').val();
-      // Use current GDD value for selected base
-      const gdd = base === '10' ? parseInt($('#gdd10Value').text().replace(/,/g, '')) : parseInt($('#gdd5Value').text().replace(/,/g, ''));
+      // Use current GDD value from the calculated data
+      const currentGdd = allData[allData.length - 1]?.gdd || 0;
+      const todaysGdd = allData[allData.length - 1]?.dailyGdd || 0;
       const stages = gddStages[pest][base];
       let stage = stages[0];
       for (let s of stages) {
-        if (gdd >= s.min && gdd <= s.max) { stage = s; break; }
+        if (currentGdd >= s.min && currentGdd <= s.max) { stage = s; break; }
       }
       $('#growthStageTitle').text(stage.title);
+      $('#todaysGddValue').text(todaysGdd || 'N/A');
+      $('#accumulatedGddValue').text(currentGdd || 'N/A');
       $('#growthStageRange').text(`${stage.min} - ${stage.max}`);
       $('#growthStagePestLabel').text($('#pestSelect option:selected').text() + ':');
       $('#growthStageDesc').text(stage.desc);
     }
 
+    function updateAllGrowthStages() {
+      const base = 10; // Hardcoded to 10°C
+      const pest = $('#pestSelect').val();
+      const currentGdd = allData[allData.length - 1]?.gdd || 0;
+      const stages = gddStages[pest][base];
+      
+      let html = '';
+      stages.forEach((stage, index) => {
+        let status = '';
+        let statusClass = '';
+        
+        if (currentGdd < stage.min) {
+          status = 'Upcoming';
+          statusClass = 'text-muted';
+        } else if (currentGdd >= stage.min && currentGdd <= stage.max) {
+          status = 'Current';
+          statusClass = 'text-success fw-bold';
+        } else {
+          status = 'Completed';
+          statusClass = 'text-secondary';
+        }
+        
+        html += `
+          <div class="border-bottom pb-2 mb-2 ${currentGdd >= stage.min && currentGdd <= stage.max ? 'bg-light rounded p-2' : ''}">
+            <div class="d-flex justify-content-between align-items-start">
+              <div>
+                <h6 class="mb-1">${stage.title}</h6>
+                <p class="mb-1 text-muted small">${stage.desc}</p>
+                <span class="badge bg-secondary">GDD: ${stage.min} - ${stage.max}</span>
+              </div>
+              <span class="badge ${statusClass === 'text-success fw-bold' ? 'bg-success' : statusClass === 'text-secondary' ? 'bg-secondary' : 'bg-light text-dark'}">${status}</span>
+            </div>
+          </div>
+        `;
+      });
+      
+      $('#allGrowthStages').html(html);
+    }
+
     // Listen to filter changes
-    $('#gddBaseSelect, #pestSelect').on('change', updateGrowthStageCard);
+    $('#pestSelect').on('change', function() {
+      updateGrowthStageCard();
+      updateAllGrowthStages();
+    });
     // Also update after mock GDD values are set
     $(function() {
       updateGrowthStageCard();
+      updateAllGrowthStages();
     });
 
-    // --- Infection Risk Level logic (mock) ---
+    // --- Risk Level logic (general) ---
     function updateRiskLevelCard() {
-      const base = $('#gddBaseSelect').val();
+      const base = 10; // Hardcoded to 10°C
       const pest = $('#pestSelect').val();
-      const gdd = base === '10' ? parseInt($('#gdd10Value').text().replace(/,/g, '')) : parseInt($('#gdd5Value').text().replace(/,/g, ''));
-      let risk = 'Low', desc = 'Conditions are not favorable for infection.';
-      if (pest === 'ascospore') {
-        if (gdd > 800) { risk = 'High'; desc = 'Conditions are highly favorable for ascospore infection.'; }
-        else if (gdd > 300) { risk = 'Moderate'; desc = 'Conditions are moderately favorable for ascospore infection.'; }
-      } else {
-        if (gdd > 1200) { risk = 'High'; desc = 'High risk for pest outbreak.'; }
-        else if (gdd > 600) { risk = 'Moderate'; desc = 'Moderate risk for pest activity.'; }
+      const gdd = allData[allData.length - 1]?.gdd || 0;
+      let risk = 'Low', desc = 'Conditions are not favorable for pest/disease activity.';
+      
+      // General risk assessment based on GDD accumulation
+      if (gdd > 1000) { 
+        risk = 'High'; 
+        desc = 'High risk for pest/disease development and population growth. Consider immediate management actions.'; 
       }
+      else if (gdd > 500) { 
+        risk = 'Moderate'; 
+        desc = 'Moderate risk for pest/disease activity. Monitor closely and prepare for management if needed.'; 
+      }
+      else { 
+        risk = 'Low'; 
+        desc = 'Conditions are not favorable for pest/disease activity. Continue monitoring.'; 
+      }
+      
       $('#riskLevelValue').text(risk);
       $('#riskLevelDesc').text(desc);
     }
-    $('#gddBaseSelect, #pestSelect').on('change', function() {
+    $('#pestSelect').on('change', function() {
       updateRiskLevelCard();
     });
     $(function() {
