@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>G.R.O.W Growing Degree Days</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .highlight {
+      color: #8bb439 !important;
+    }
+    .bg-highlight {
+      background-color: #8bb439 !important;
+      color: #fff !important;
+    }
+    .card-title {
+      font-size: 1rem;
+      font-weight: 500;
+    }
+    .card-value {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #222;
+    }
+    .badge-info {
+      background: #e6f4d7;
+      color: #8bb439;
+      font-size: 0.8em;
+    }
+    .info-icon {
+      font-size: 1.1em;
+      color: #8bb439;
+      cursor: pointer;
+      vertical-align: middle;
+    }
+  </style>
+</head>
+<body class="bg-light">
+  <div class="container py-4">
+    <!-- Header -->
+    <div class="mb-3 p-4 bg-white rounded-4 shadow-sm">
+      <h2 class="mb-1 fw-bold">Growing Degree Days</h2>
+      <p class="text-muted mb-0">Use growing degree days to anticipate pest and disease development, optimize biofix timing, and improve risk management decisions for your crops.</p>
+    </div>
+
+    <!-- Filters (Farm/Paddock, GDD Base, Pest, Biofix) -->
+    <div class="mb-4 bg-white p-3 rounded-4 shadow-sm d-flex flex-wrap gap-2 align-items-center">
+      <label for="farmSelect" class="form-label mb-0 me-2">Farm:</label>
+      <select id="farmSelect" class="form-select w-auto me-3">
+        <option value="1">North Farm</option>
+        <option value="2">South Farm</option>
+      </select>
+      <label for="paddockSelect" class="form-label mb-0 me-2">Paddock:</label>
+      <select id="paddockSelect" class="form-select w-auto me-3">
+        <option value="1">Iowa Demo Field</option>
+      </select>
+      <label for="gddBaseSelect" class="form-label mb-0 me-2">GDD Base:
+        <span class="material-icons info-icon ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="The GDD base is the minimum temperature threshold for crop growth. Most crops use 10°C, but some use 5°C. Choose the base that matches your crop or pest.">info</span>
+      </label>
+      <select id="gddBaseSelect" class="form-select w-auto me-3">
+        <option value="10">10°C</option>
+        <option value="5">5°C</option>
+      </select>
+      <label for="pestSelect" class="form-label mb-0 me-2">Pest:</label>
+      <select id="pestSelect" class="form-select w-auto me-3">
+        <option value="ascospore">Fungus Ascospore</option>
+        <option value="other">Other Pest</option>
+      </select>
+      <label for="biofixFrom" class="form-label mb-0 me-2">Biofix:</label>
+      <input type="date" id="biofixFrom" class="form-control w-auto">
+    </div>
+
+    <!-- Current Growth Stage Card -->
+    <div class="mb-4">
+      <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-body">
+          <div class="d-flex align-items-center mb-2">
+            <span class="material-icons highlight me-2">show_chart</span>
+            <span class="fw-bold">Current Growth Stage</span>
+          </div>
+          <div class="fs-4 fw-bold" id="growthStageTitle">7% Ascospore Maturation</div>
+          <hr class="my-2">
+          <div><b>GDD:</b> <span id="growthStageRange">201 - 300</span></div>
+          <div><b id="growthStagePestLabel">Fungus Ascospore:</b> <span id="growthStageDesc">7% Ascospore Maturation.</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Biological Recommendations Section -->
+    <div class="mb-4">
+      <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-body">
+          <div class="d-flex align-items-center mb-2">
+            <span class="material-icons highlight me-2">eco</span>
+            <span class="fw-bold">Biological Recommendations</span>
+          </div>
+          <div id="bioRecs">
+            <!-- Recommendations will be inserted here -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Map Placeholder -->
+    <div class="bg-white p-4 rounded-4 shadow-sm mb-4">
+      <h5 class="mb-3">Map View</h5>
+      <div id="map" style="height: 300px; width: 100%;"></div>
+    </div>
+
+    <!-- Chart Controls (below map) -->
+    <!-- Date range filters removed as requested -->
+
+    <!-- Charts stacked vertically -->
+    <div class="mb-4">
+      <div class="bg-white p-3 rounded-4 shadow-sm mb-4">
+        <h6 class="mb-2">Accumulated GDD
+          <span class="material-icons info-icon ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Shows the total accumulated Growing Degree Days (GDD) over the selected period, based on the chosen base temperature and biofix date.">info</span>
+        </h6>
+        <canvas id="accumGddChart" height="120"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap, jQuery, Chart.js, Material Icons, and Leaflet -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    // --- MOCK DATA GENERATION ---
+    function generateMockGDDSeries(fromDate, toDate) {
+      const dates = [];
+      let d = new Date(fromDate);
+      const end = new Date(toDate);
+      while (d <= end) {
+        dates.push(new Date(d));
+        d.setDate(d.getDate() + 1); // daily
+      }
+      
+      let cumulativeGDD10 = 800; // Starting value
+      let cumulativeGDD5 = 1200; // Starting value
+      
+      return dates.map((date, index) => {
+        // Generate daily GDD values
+        const dailyGDD10 = Math.max(0, (Math.random() * 8 + 8) - 10); // Base 10°C
+        const dailyGDD5 = Math.max(0, (Math.random() * 8 + 8) - 5);   // Base 5°C
+        
+        cumulativeGDD10 += dailyGDD10;
+        cumulativeGDD5 += dailyGDD5;
+        
+        // Calculate days to maturity (decreasing over time)
+        const maturityDays = Math.max(0, 120 - index * 1.5 + (Math.random() * 10 - 5));
+        
+        // Calculate GDD rate (weekly average)
+        const weeklyRate = (Math.random() * 5 + 10).toFixed(1);
+        
+        return {
+          date: date.toISOString().split('T')[0],
+          gdd10: Math.round(cumulativeGDD10),
+          gdd5: Math.round(cumulativeGDD5),
+          maturity: Math.round(maturityDays),
+          rate: parseFloat(weeklyRate)
+        };
+      });
+    }
+    
+    function getMockCurrentGDD() {
+      return {
+        gdd10: Math.round(Math.random() * 500 + 1000),
+        gdd5: Math.round(Math.random() * 500 + 1500),
+        maturity: Math.round(Math.random() * 30 + 30),
+        rate: (Math.random() * 5 + 10).toFixed(1)
+      };
+    }
+
+    let allData = [];
+    let accumGddChart;
+
+    function updateAccumGddChart(filteredData) {
+      accumGddChart.data.labels = filteredData.map(d => d.date);
+      // Use selected base
+      const base = $('#gddBaseSelect').val();
+      accumGddChart.data.datasets[0].data = filteredData.map(d => base === '10' ? d.gdd10 : d.gdd5);
+      accumGddChart.update();
+    }
+
+    $(function() {
+      // Set up chart date range selectors (default: last 30 days)
+      const today = new Date();
+      const prior = new Date();
+      prior.setDate(today.getDate() - 29);
+      const startDate = prior.toISOString().split('T')[0];
+      const endDate = today.toISOString().split('T')[0];
+      $('#chartFromDate').val(startDate);
+      $('#chartToDate').val(endDate);
+
+      // Initialize Accumulated GDD chart
+      accumGddChart = new Chart(document.getElementById('accumGddChart').getContext('2d'), {
+        type: 'line',
+        data: { labels: [], datasets: [{ label: 'Accumulated GDD', data: [], borderColor: '#f87171', backgroundColor: 'rgba(248,113,113,0.1)', tension: 0.3, fill: true }] },
+        options: { responsive: true, plugins: { legend: { display: false } }, scales: { x: { display: true, title: { display: true, text: 'Date' } }, y: { display: true, title: { display: true, text: 'Accumulated GDD' } } } }
+      });
+
+      // Generate and display mock historical GDD data for chart
+      allData = generateMockGDDSeries(startDate, endDate);
+      updateAccumGddChart(allData);
+
+      // Date range filter for chart
+      $('#applyDateRange').on('click', function() {
+        const from = $('#chartFromDate').val();
+        const to = $('#chartToDate').val();
+        allData = generateMockGDDSeries(from, to);
+        updateAccumGddChart(allData);
+      });
+
+      // Update chart when base changes
+      $('#gddBaseSelect').on('change', function() {
+        updateAccumGddChart(allData);
+      });
+
+      // Leaflet Map
+      var map = L.map('map').setView([41.8781, -93.0977], 6); // Centered on Iowa
+      L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+        maxZoom: 19,
+        attribution: 'Tiles © Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+      }).addTo(map);
+      
+      // Example polygon (Iowa Demo Field boundary)
+      const iowaFieldCoords = [
+        [41.88, -93.10],
+        [41.88, -93.09],
+        [41.87, -93.09],
+        [41.87, -93.10]
+      ];
+      L.polygon(iowaFieldCoords, {color: '#8bb439', fillOpacity: 0.3})
+        .addTo(map)
+        .bindPopup('Iowa Demo Field')
+        .openPopup();
+      map.fitBounds(iowaFieldCoords);
+
+      // Enable Bootstrap tooltips
+      var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+      tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+      });
+    });
+
+    // --- GDD Growth Stage Mapping (mock) ---
+    const gddStages = {
+      ascospore: {
+        10: [
+          { min: 0, max: 200, title: 'Dormant', desc: 'No ascospore maturation.' },
+          { min: 201, max: 300, title: '7% Ascospore Maturation', desc: '7% Ascospore Maturation.' },
+          { min: 301, max: 500, title: '20% Ascospore Maturation', desc: '20% Ascospore Maturation.' },
+          { min: 501, max: 800, title: '50% Ascospore Maturation', desc: '50% Ascospore Maturation.' },
+          { min: 801, max: 2000, title: 'Mature', desc: 'Full ascospore maturity.' }
+        ],
+        5: [
+          { min: 0, max: 300, title: 'Dormant', desc: 'No ascospore maturation.' },
+          { min: 301, max: 400, title: '7% Ascospore Maturation', desc: '7% Ascospore Maturation.' },
+          { min: 401, max: 700, title: '20% Ascospore Maturation', desc: '20% Ascospore Maturation.' },
+          { min: 701, max: 1200, title: '50% Ascospore Maturation', desc: '50% Ascospore Maturation.' },
+          { min: 1201, max: 3000, title: 'Mature', desc: 'Full ascospore maturity.' }
+        ]
+      },
+      other: {
+        10: [
+          { min: 0, max: 400, title: 'Egg Laying', desc: 'Pest is laying eggs.' },
+          { min: 401, max: 900, title: 'Larval Stage', desc: 'Larvae are active.' },
+          { min: 901, max: 2000, title: 'Adult', desc: 'Adults present.' }
+        ],
+        5: [
+          { min: 0, max: 600, title: 'Egg Laying', desc: 'Pest is laying eggs.' },
+          { min: 601, max: 1200, title: 'Larval Stage', desc: 'Larvae are active.' },
+          { min: 1201, max: 3000, title: 'Adult', desc: 'Adults present.' }
+        ]
+      }
+    };
+
+    function updateGrowthStageCard() {
+      const base = $('#gddBaseSelect').val();
+      const pest = $('#pestSelect').val();
+      // Use current GDD value for selected base
+      const gdd = base === '10' ? parseInt($('#gdd10Value').text().replace(/,/g, '')) : parseInt($('#gdd5Value').text().replace(/,/g, ''));
+      const stages = gddStages[pest][base];
+      let stage = stages[0];
+      for (let s of stages) {
+        if (gdd >= s.min && gdd <= s.max) { stage = s; break; }
+      }
+      $('#growthStageTitle').text(stage.title);
+      $('#growthStageRange').text(`${stage.min} - ${stage.max}`);
+      $('#growthStagePestLabel').text($('#pestSelect option:selected').text() + ':');
+      $('#growthStageDesc').text(stage.desc);
+    }
+
+    // Listen to filter changes
+    $('#gddBaseSelect, #pestSelect').on('change', updateGrowthStageCard);
+    // Also update after mock GDD values are set
+    $(function() {
+      updateGrowthStageCard();
+    });
+
+    // --- Infection Risk Level logic (mock) ---
+    function updateRiskLevelCard() {
+      const base = $('#gddBaseSelect').val();
+      const pest = $('#pestSelect').val();
+      const gdd = base === '10' ? parseInt($('#gdd10Value').text().replace(/,/g, '')) : parseInt($('#gdd5Value').text().replace(/,/g, ''));
+      let risk = 'Low', desc = 'Conditions are not favorable for infection.';
+      if (pest === 'ascospore') {
+        if (gdd > 800) { risk = 'High'; desc = 'Conditions are highly favorable for ascospore infection.'; }
+        else if (gdd > 300) { risk = 'Moderate'; desc = 'Conditions are moderately favorable for ascospore infection.'; }
+      } else {
+        if (gdd > 1200) { risk = 'High'; desc = 'High risk for pest outbreak.'; }
+        else if (gdd > 600) { risk = 'Moderate'; desc = 'Moderate risk for pest activity.'; }
+      }
+      $('#riskLevelValue').text(risk);
+      $('#riskLevelDesc').text(desc);
+    }
+    $('#gddBaseSelect, #pestSelect').on('change', function() {
+      updateRiskLevelCard();
+    });
+    $(function() {
+      updateRiskLevelCard();
+    });
+
+    // --- NTS Product Recommendations Mapping (sample) ---
+    const ntsProducts = {
+      ascospore: [
+        {
+          name: 'NTS BAM™ (Biologically Activated Minerals)',
+          desc: 'A microbial inoculant to support plant health and resilience against fungal pathogens.',
+          link: 'https://www.nutri-tech.com.au/products/bam-biologically-activated-minerals'
+        },
+        {
+          name: 'NTS Triple Ten™',
+          desc: 'A broad-spectrum liquid fertiliser with trace elements and biologicals for plant vigor.',
+          link: 'https://www.nutri-tech.com.au/products/triple-ten'
+        }
+      ],
+      other: [
+        {
+          name: 'NTS K-Carb™',
+          desc: 'A potassium carbonate solution for disease suppression and improved plant health.',
+          link: 'https://www.nutri-tech.com.au/products/k-carb'
+        }
+      ]
+    };
+
+    function updateBioRecs() {
+      const pest = $('#pestSelect').val();
+      const recs = ntsProducts[pest] || [];
+      let html = '';
+      if (recs.length === 0) {
+        html = '<div class="text-muted">No recommendations available for this pest/disease.</div>';
+      } else {
+        html = recs.map(prod => `
+          <div class="mb-2">
+            <b>${prod.name}</b><br>
+            <span>${prod.desc}</span><br>
+            <a href="${prod.link}" class="btn btn-sm btn-outline-success mt-1" target="_blank">More Information <span class="material-icons" style="font-size:1em;vertical-align:middle;">open_in_new</span></a>
+          </div>
+        `).join('');
+      }
+      $('#bioRecs').html(html);
+    }
+    $('#pestSelect').on('change', updateBioRecs);
+    $(function() { updateBioRecs(); });
+  </script>
+</body>
+</html> 
