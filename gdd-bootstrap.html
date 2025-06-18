@@ -131,12 +131,12 @@
     <div class="mb-4 bg-white p-3 rounded-4 shadow-sm d-flex flex-wrap gap-2 align-items-center">
       <label for="farmSelect" class="form-label mb-0 me-2">Farm:</label>
       <select id="farmSelect" class="form-select w-auto me-3">
-        <option value="1">North Farm</option>
+        <option value="1">Nutrition Farms Yandina</option>
         <option value="2">South Farm</option>
       </select>
       <label for="paddockSelect" class="form-label mb-0 me-2">Paddock:</label>
       <select id="paddockSelect" class="form-select w-auto me-3">
-        <option value="1">Iowa Demo Field</option>
+        <option value="1">Ginger Paddock</option>
       </select>
       <label for="pestSelect" class="form-label mb-0 me-2">Pest/Disease:</label>
       <select id="pestSelect" class="form-select w-auto me-3">
@@ -155,59 +155,23 @@
       </div>
     </div>
 
-    <!-- Biofix Help Modal -->
-    <div class="modal fade" id="biofixModal" tabindex="-1" aria-labelledby="biofixModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="biofixModalLabel">Setting Your Biofix Date</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    <!-- Apple Scab Info Card (collapsible, only for Apple Scab) -->
+    <div id="appleScabInfoCard" class="mb-4" style="display:none;">
+      <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-body">
+          <div class="d-flex align-items-center mb-2">
+            <span class="material-icons highlight me-2">info</span>
+            <span class="fw-bold">Apple Scab (Venturia inaequalis) Ascospore Growing Degree Day Model</span>
+            <button class="btn btn-sm btn-outline-secondary ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#appleScabInfoCollapse" aria-expanded="false" aria-controls="appleScabInfoCollapse">
+              <span class="material-icons expand-icon collapsed">expand_more</span>
+            </button>
           </div>
-          <div class="modal-body">
-            <div class="alert alert-warning">
-              <strong>Important:</strong> The biofix date is the starting point for all GDD calculations. Setting this incorrectly will lead to inaccurate predictions.
+          <div class="collapse" id="appleScabInfoCollapse">
+            <hr class="my-2">
+            <div class="text-muted">
+              <p>The Apple Scab Degree Day Model is used to predict the ascospore maturation of the Apple Scab fungus, in order to improve pest management decisions.</p>
+              <p>For best results, a biofix date should be set at bud-break. The growing degree day model can then be used to predict ascospore maturation.</p>
             </div>
-            
-            <h6 class="fw-bold text-success">What is a Biofix Date?</h6>
-            <p>A biofix date is the date when GDD accumulation begins for a specific pest or disease. It's typically based on a key biological event that signals the start of the pest's development cycle.</p>
-            
-            <h6 class="fw-bold text-success">How to Determine Your Biofix Date:</h6>
-            <div class="row">
-              <div class="col-md-6">
-                <h6 class="fw-bold">For Apple Scab:</h6>
-                <ul class="small">
-                  <li><strong>First Ascospore Discharge:</strong> When the first mature ascospores are released from overwintering leaves</li>
-                  <li><strong>Green Tip Stage:</strong> When apple buds show green tip (alternative method)</li>
-                  <li><strong>Historical Data:</strong> Use the average date from previous years in your region</li>
-                </ul>
-              </div>
-              <div class="col-md-6">
-                <h6 class="fw-bold">For Other Pests:</h6>
-                <ul class="small">
-                  <li><strong>First Adult Emergence:</strong> When you first see adult pests in the field</li>
-                  <li><strong>First Egg Laying:</strong> When you first observe eggs</li>
-                  <li><strong>First Larval Activity:</strong> When larvae first become active</li>
-                  <li><strong>Phenological Indicators:</strong> When specific plants bloom or bud</li>
-                </ul>
-              </div>
-            </div>
-            
-            <h6 class="fw-bold text-success">Tips for Accurate Biofix Setting:</h6>
-            <ul>
-              <li>Monitor your field regularly for the first signs of pest activity</li>
-              <li>Use pheromone traps to detect first adult emergence</li>
-              <li>Consult local extension services for regional biofix dates</li>
-              <li>Keep records of biofix dates from previous years</li>
-              <li>When in doubt, use the earliest date you observe activity</li>
-            </ul>
-            
-            <div class="alert alert-info">
-              <strong>Pro Tip:</strong> If you're unsure about your biofix date, start with a conservative estimate (earlier date) and adjust based on field observations. It's better to start counting too early than too late.
-            </div>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            <button type="button" class="btn btn-main-green" data-bs-dismiss="modal">I Understand</button>
           </div>
         </div>
       </div>
@@ -467,6 +431,26 @@
       });
       $('#introCollapse').on('hide.bs.collapse', function () {
         $(this).prev().find('.expand-icon').addClass('collapsed');
+      });
+
+      // Show Apple Scab info card only when Apple Scab is selected
+      function toggleAppleScabInfoCard() {
+        if ($('#pestSelect').val() === 'ascospore') {
+          $('#appleScabInfoCard').show();
+        } else {
+          $('#appleScabInfoCard').hide();
+          $('#appleScabInfoCollapse').collapse('hide');
+        }
+      }
+      $('#pestSelect').on('change', toggleAppleScabInfoCard);
+      toggleAppleScabInfoCard();
+
+      // Handle expand/collapse icon rotation for Apple Scab info card
+      $('#appleScabInfoCollapse').on('show.bs.collapse', function () {
+        $('#appleScabInfoCard .expand-icon').removeClass('collapsed');
+      });
+      $('#appleScabInfoCollapse').on('hide.bs.collapse', function () {
+        $('#appleScabInfoCard .expand-icon').addClass('collapsed');
       });
     });
 
