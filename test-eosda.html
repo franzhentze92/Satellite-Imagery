@@ -3,99 +3,247 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EOSDA API Test</title>
+    <title>NTS G.R.O.W - Satellite Imagery</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --nts-green: #8cb43a;
+            --nts-green-light: #a4c55c;
+            --nts-green-dark: #739431;
+        }
+        
+        .section-header {
+            background-color: #f8f9fa;
+            padding: 10px 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            border-left: 4px solid var(--nts-green);
+        }
+        
+        .card {
+            height: 100%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border: none;
+        }
+        
+        .card-header {
+            background-color: var(--nts-green);
+            color: white;
+            border-bottom: none;
+            padding: 15px;
+        }
+        
+        .card-header h5 {
+            margin: 0;
+            font-weight: 500;
+        }
+        
+        .date-range-info {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-bottom: 15px;
+            padding: 8px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            border-left: 3px solid var(--nts-green);
+        }
+        
+        .btn-primary {
+            background-color: var(--nts-green);
+            border-color: var(--nts-green);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--nts-green-dark);
+            border-color: var(--nts-green-dark);
+        }
+        
+        .btn-success {
+            background-color: var(--nts-green);
+            border-color: var(--nts-green);
+        }
+        
+        .btn-success:hover {
+            background-color: var(--nts-green-dark);
+            border-color: var(--nts-green-dark);
+        }
+        
+        .btn-info {
+            background-color: var(--nts-green) !important;
+            border-color: var(--nts-green) !important;
+        }
+        
+        .btn-info:hover {
+            background-color: var(--nts-green-dark) !important;
+            border-color: var(--nts-green-dark) !important;
+        }
+        
+        .page-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 2rem 0;
+            background: linear-gradient(45deg, var(--nts-green-dark), var(--nts-green));
+            color: white;
+            border-radius: 8px;
+        }
+        
+        .page-header h1 {
+            margin: 0;
+            font-weight: 600;
+        }
+        
+        .page-header p {
+            margin: 10px 0 0;
+            opacity: 0.9;
+        }
+        
+        .alert-success {
+            background-color: rgba(140, 180, 58, 0.1);
+            border-color: var(--nts-green);
+            color: var(--nts-green-dark);
+        }
+
+        .btn:focus, .btn:active {
+            box-shadow: 0 0 0 0.25rem rgba(140, 180, 58, 0.25) !important;
+        }
+
+        .form-control:focus {
+            border-color: var(--nts-green);
+            box-shadow: 0 0 0 0.25rem rgba(140, 180, 58, 0.25);
+        }
+    </style>
 </head>
 <body class="bg-light">
     <div class="container py-4">
-        <h2>EOSDA API Connection Test</h2>
+        <div class="page-header">
+            <h1>NTS G.R.O.W</h1>
+            <p>Satellite Imagery Analysis Platform</p>
+        </div>
         
-        <div class="row">
+        <!-- Connection Section -->
+        <div class="section-header">
+            <h4 class="m-0">System Status</h4>
+        </div>
+        <div class="row mb-4">
             <div class="col-md-6">
                 <div class="card">
                     <div class="card-header">
-                        <h5>Test Proxy Connection</h5>
+                        <h5 class="mb-0">Proxy Connection Test</h5>
                     </div>
                     <div class="card-body">
-                        <button id="testProxy" class="btn btn-primary">Test Proxy</button>
+                        <button id="testProxy" class="btn btn-primary">Test Connection</button>
                         <div id="proxyResult" class="mt-3"></div>
                     </div>
                 </div>
             </div>
-            
-            <div class="col-md-6">
+        </div>
+
+        <!-- Scene Search Section -->
+        <div class="section-header">
+            <h4 class="m-0">Scene Search</h4>
+        </div>
+        <div class="row mb-4">
+            <div class="col-md-12">
                 <div class="card">
                     <div class="card-header">
-                        <h5>Test EOSDA Weather API</h5>
+                        <h5 class="mb-0">EOSDA Search API</h5>
                     </div>
                     <div class="card-body">
-                        <div class="mb-3">
-                            <label for="dateFrom" class="form-label">Date From:</label>
-                            <input type="datetime-local" id="dateFrom" class="form-control" value="2024-06-16T00:00">
+                        <div class="date-range-info">
+                            <i class="bi bi-info-circle"></i>
+                            Default date range: May 19, 2025 - June 19, 2025
                         </div>
-                        <div class="mb-3">
-                            <label for="dateTo" class="form-label">Date To:</label>
-                            <input type="datetime-local" id="dateTo" class="form-control" value="2024-06-18T00:00">
-                        </div>
-                        <button id="testEOSDAWeather" class="btn btn-success">Test EOSDA Weather API</button>
-                        <div id="eosdaWeatherResult" class="mt-3"></div>
+                        <button id="testSearchApiBtn" class="btn btn-info text-white">Search Available Scenes</button>
+                        <div id="searchResult" class="mt-3"></div>
                     </div>
                 </div>
             </div>
         </div>
-        
-        <div class="row mt-4">
+
+        <!-- Vegetation Analysis Section -->
+        <div class="section-header">
+            <h4 class="m-0">Vegetation Analysis</h4>
+        </div>
+        <div class="row mb-4">
             <div class="col-md-6">
                 <div class="card">
                     <div class="card-header">
-                        <h5>Test EOSDA Vegetation Indices API</h5>
+                        <h5 class="mb-0">Vegetation Indices</h5>
                     </div>
                     <div class="card-body">
                         <div class="mb-3">
                             <label for="vegDateFrom" class="form-label">Date From:</label>
-                            <input type="date" id="vegDateFrom" class="form-control" value="2024-06-01">
+                            <input type="date" id="vegDateFrom" class="form-control">
                         </div>
                         <div class="mb-3">
                             <label for="vegDateTo" class="form-label">Date To:</label>
-                            <input type="date" id="vegDateTo" class="form-control" value="2024-06-30">
+                            <input type="date" id="vegDateTo" class="form-control">
                         </div>
-                        <button id="testEOSDAVeg" class="btn btn-success">Test EOSDA Vegetation Indices API</button>
+                        <button id="testEOSDAVeg" class="btn btn-success">Analyze Vegetation Indices</button>
                         <div id="eosdaVegResult" class="mt-3"></div>
                     </div>
                 </div>
             </div>
-        </div>
-        
-        <div class="row mt-4">
             <div class="col-md-6">
                 <div class="card">
                     <div class="card-header">
-                        <h5>Test EOSDA Soil Moisture API</h5>
+                        <h5 class="mb-0">Soil Moisture</h5>
                     </div>
                     <div class="card-body">
                         <div class="mb-3">
                             <label for="smDateFrom" class="form-label">Date From:</label>
-                            <input type="date" id="smDateFrom" class="form-control" value="2024-06-01">
+                            <input type="date" id="smDateFrom" class="form-control">
                         </div>
                         <div class="mb-3">
                             <label for="smDateTo" class="form-label">Date To:</label>
-                            <input type="date" id="smDateTo" class="form-control" value="2024-06-30">
+                            <input type="date" id="smDateTo" class="form-control">
                         </div>
-                        <button id="testEOSDASoilMoisture" class="btn btn-success">Test EOSDA Soil Moisture API</button>
+                        <button id="testEOSDASoilMoisture" class="btn btn-success">Analyze Soil Moisture</button>
                         <div id="eosdaSoilMoistureResult" class="mt-3"></div>
                     </div>
                 </div>
             </div>
         </div>
-        
-        <div class="row mt-4">
-            <div class="col-12">
+
+        <!-- Weather Section -->
+        <div class="section-header">
+            <h4 class="m-0">Weather Data</h4>
+        </div>
+        <div class="row mb-4">
+            <div class="col-md-6">
                 <div class="card">
                     <div class="card-header">
-                        <h5>Response Details</h5>
+                        <h5 class="mb-0">Weather Analysis</h5>
                     </div>
                     <div class="card-body">
-                        <pre id="responseDetails" class="bg-light p-3 rounded" style="max-height: 400px; overflow-y: auto;"></pre>
+                        <div class="mb-3">
+                            <label for="dateFrom" class="form-label">Date From:</label>
+                            <input type="datetime-local" id="dateFrom" class="form-control">
+                        </div>
+                        <div class="mb-3">
+                            <label for="dateTo" class="form-label">Date To:</label>
+                            <input type="datetime-local" id="dateTo" class="form-control">
+                        </div>
+                        <button id="testEOSDAWeather" class="btn btn-success">Analyze Weather Data</button>
+                        <div id="eosdaWeatherResult" class="mt-3"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Response Details Section -->
+        <div class="section-header">
+            <h4 class="m-0">Response Details</h4>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">API Response</h5>
+                        <small class="text-white">Detailed response from the last API call</small>
+                    </div>
+                    <div class="card-body">
+                        <pre id="responseDetails" class="bg-light p-3 rounded" style="max-height: 400px; overflow-y: auto; font-size: 0.9rem;"></pre>
                     </div>
                 </div>
             </div>
@@ -106,29 +254,41 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     
     <script>
-        const sampleGeometry = {
+        // Yandina Farm polygon coordinates
+        const yandinaFarmGeometry = {
             "type": "Polygon",
             "coordinates": [[
-                [29.659867, 49.596693],
-                [29.658108, 49.591491],
-                [29.667463, 49.590072],
-                [29.669137, 49.595135],
-                [29.659867, 49.596693]
+                [152.9148355104133, -26.49630785386763],
+                [152.9149951437186, -26.49644491790693],
+                [152.9150826047683, -26.49643498282219],
+                [152.915136003929, -26.49647654096426],
+                [152.9151679717066, -26.49641027369633],
+                [152.9151522879532, -26.4963066956674],
+                [152.9151405649811, -26.49617943071427],
+                [152.9151330645278, -26.49603918146022],
+                [152.9150405267262, -26.49598117140157],
+                [152.9149028386955, -26.49619458038391],
+                [152.9148355104133, -26.49630785386763]
             ]]
         };
-        // EOSDA sample polygon (Ukraine)
-        const samplePolygon = [
-            [29.659867, 49.596693],
-            [29.658108, 49.591491],
-            [29.667463, 49.590072],
-            [29.669137, 49.595135],
-            [29.659867, 49.596693]
-        ];
-        const samplePolygonGeoJSON = {
-            type: 'Polygon',
-            coordinates: [samplePolygon]
-        };
+
         $(document).ready(function() {
+            // Set default dates for all APIs (May 19, 2025 - June 19, 2025)
+            const defaultStartDate = '2025-05-19';
+            const defaultEndDate = '2025-06-19';
+            
+            // Set default dates for Weather API (needs time)
+            $('#dateFrom').val(defaultStartDate + 'T00:00');
+            $('#dateTo').val(defaultEndDate + 'T00:00');
+            
+            // Set default dates for Vegetation Indices API
+            $('#vegDateFrom').val(defaultStartDate);
+            $('#vegDateTo').val(defaultEndDate);
+            
+            // Set default dates for Soil Moisture API
+            $('#smDateFrom').val(defaultStartDate);
+            $('#smDateTo').val(defaultEndDate);
+            
             // Test proxy connection
             $('#testProxy').click(function() {
                 $('#proxyResult').html('<div class="alert alert-info">Testing proxy connection...</div>');
@@ -149,14 +309,14 @@
             $('#testEOSDAWeather').click(function() {
                 const date_from = $('#dateFrom').val();
                 const date_to = $('#dateTo').val();
-                $('#eosdaWeatherResult').html('<div class="alert alert-info">Testing EOSDA Weather API...</div>');
+                $('#eosdaWeatherResult').html('<div class="alert alert-info">Testing EOSDA Weather API (Yandina Farm, Australia)...</div>');
                 fetch('http://localhost:3001/fetch-weather', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        geometry: sampleGeometry,
+                        geometry: yandinaFarmGeometry,
                         date_from: date_from,
                         date_to: date_to
                     })
@@ -182,30 +342,69 @@
                 });
             });
             
-            // Test EOSDA Vegetation Indices API
-            $('#testEOSDAVeg').click(function() {
-                const date_start = $('#vegDateFrom').val() + 'T00:00';
-                const date_end = $('#vegDateTo').val() + 'T00:00';
-                $('#eosdaVegResult').html('<div class="alert alert-info">Testing EOSDA Vegetation Indices API (Sample Polygon)...</div>');
-                fetch('http://localhost:3001/fetch-vegetation-indices', {
+            // Test EOSDA Search API
+            $('#testSearchApiBtn').click(function() {
+                $('#searchResult').html('<div class="alert alert-info">Testing EOSDA Search API (Yandina Farm, Australia)...</div>');
+                fetch('http://localhost:3001/fetch-scenes', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        date_start: date_start,
-                        date_end: date_end,
-                        geometry: samplePolygonGeoJSON,
-                        bm_type: ["NDVI", "EVI", "SAVI", "MSI"],
-                        sensors: ["sentinel2"]
+                        fields: ["sceneID", "cloudCoverage", "date", "view_id"],
+                        limit: 5,
+                        page: 1,
+                        search: {
+                            date: { from: defaultStartDate, to: defaultEndDate },
+                            cloudCoverage: { from: 0, to: 90 },
+                            shape: yandinaFarmGeometry
+                        },
+                        sort: { date: "desc" }
                     })
                 })
                 .then(async response => {
                     let text = await response.text();
                     try {
                         let data = JSON.parse(text);
-                        if (data.success) {
-                            $('#eosdaVegResult').html(`<div class="alert alert-success">✅ EOSDA Vegetation Indices API call successful (Sample Polygon)!</div>`);
+                        if (data.results && data.results.length > 0) {
+                            $('#searchResult').html(`<div class="alert alert-success">✅ EOSDA Search API call successful! Found ${data.results.length} scenes.</div>`);
                         } else {
-                            $('#eosdaVegResult').html(`<div class="alert alert-warning">⚠️ EOSDA Vegetation Indices API returned: ${data.error || 'Unknown error'}</div>`);
+                            $('#searchResult').html(`<div class="alert alert-warning">⚠️ EOSDA Search API returned: No scenes found</div>`);
+                        }
+                        $('#responseDetails').text(JSON.stringify(data, null, 2));
+                    } catch (e) {
+                        $('#searchResult').html(`<div class="alert alert-danger">❌ EOSDA Search API call failed: ${e.message}</div>`);
+                        $('#responseDetails').text('Raw response:\n' + text);
+                    }
+                })
+                .catch(error => {
+                    $('#searchResult').html(`<div class="alert alert-danger">❌ EOSDA Search API call failed: ${error.message}</div>`);
+                    $('#responseDetails').text('Error: ' + error.message);
+                });
+            });
+            
+            // Test EOSDA Vegetation Indices API
+            $('#testEOSDAVeg').click(function() {
+                const date_start = $('#vegDateFrom').val();
+                const date_end = $('#vegDateTo').val();
+                $('#eosdaVegResult').html('<div class="alert alert-info">Testing EOSDA Vegetation Indices API (Yandina Farm, Australia)...</div>');
+                fetch('http://localhost:3001/fetch-vegetation-indices', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        date_start: date_start,
+                        date_end: date_end,
+                        geometry: yandinaFarmGeometry,
+                        bm_type: ["B04", "B08"],  // Use actual Sentinel-2 bands instead of NDVI
+                        limit: 3
+                    })
+                })
+                .then(async response => {
+                    let text = await response.text();
+                    try {
+                        let data = JSON.parse(text);
+                        if (data.success && data.data && data.data.length > 0) {
+                            $('#eosdaVegResult').html(`<div class="alert alert-success">✅ EOSDA Vegetation Indices API call successful! Processed ${data.data.length} scenes.</div>`);
+                        } else {
+                            $('#eosdaVegResult').html(`<div class="alert alert-warning">⚠️ EOSDA Vegetation Indices API returned: No data available</div>`);
                         }
                         $('#responseDetails').text(JSON.stringify(data, null, 2));
                     } catch (e) {
@@ -221,19 +420,16 @@
             
             // Test EOSDA Soil Moisture API
             $('#testEOSDASoilMoisture').click(function() {
-                const date_start = $('#smDateFrom').val() + 'T00:00';
-                const date_end = $('#smDateTo').val() + 'T00:00';
-                $('#eosdaSoilMoistureResult').html('<div class="alert alert-info">Testing EOSDA Soil Moisture API (Sample Polygon)...</div>');
+                const date_start = $('#smDateFrom').val();
+                const date_end = $('#smDateTo').val();
+                $('#eosdaSoilMoistureResult').html('<div class="alert alert-info">Testing EOSDA Soil Moisture API (Yandina Farm, Australia)...</div>');
                 fetch('http://localhost:3001/fetch-soil-moisture', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         date_start: date_start,
                         date_end: date_end,
-                        geometry: samplePolygonGeoJSON,
-                        bm_type: "soilmoisture",
-                        sensors: ["soilmoisture"],
-                        limit: 10
+                        geometry: yandinaFarmGeometry
                     })
                 })
                 .then(async response => {
@@ -241,7 +437,7 @@
                     try {
                         let data = JSON.parse(text);
                         if (data.success) {
-                            $('#eosdaSoilMoistureResult').html(`<div class="alert alert-success">✅ EOSDA Soil Moisture API call successful (Sample Polygon)!</div>`);
+                            $('#eosdaSoilMoistureResult').html(`<div class="alert alert-success">✅ EOSDA Soil Moisture API call successful!</div>`);
                         } else {
                             $('#eosdaSoilMoistureResult').html(`<div class="alert alert-warning">⚠️ EOSDA Soil Moisture API returned: ${data.error || 'Unknown error'}</div>`);
                         }
